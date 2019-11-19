@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp">
+
+        <TextView
+            android:id="@+id/tv_hello"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="16dp"
+            android:text="下午好，舒露"
+            android:textColor="#000"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_hello"
+            android:text="11月19日 11:14 星期二"
+            android:textSize="15sp" />
+
+        <com.shehuan.niv.NiceImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/timg"
+            app:is_circle="true" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.loopeer.shadow.ShadowView
+            android:id="@+id/btn_room"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:elevation="10dp"
+            android:foreground="?attr/selectableItemBackground"
+            android:onClick="onShadowClick"
+            android:padding="10dp"
+            app:backgroundColor="#FD872A"
+            app:cornerRadius="4dp"
+            app:shadowColor="#FD872A"
+            app:shadowMargin="20dp"
+            app:shadowRadius="14dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginEnd="44dp"
+                android:gravity="center"
+                android:text="我的寝室"
+                android:textColor="#fff" />
+        </com.loopeer.shadow.ShadowView>
+
+        <com.loopeer.shadow.ShadowView
+            android:id="@+id/btn_personal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:elevation="10dp"
+            android:foreground="?attr/selectableItemBackground"
+            android:onClick="onShadowClick"
+            android:padding="10dp"
+            app:backgroundColor="#653EF8"
+            app:cornerRadius="4dp"
+            app:shadowColor="#653EF8"
+            app:shadowMargin="20dp"
+            app:shadowRadius="14dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginEnd="44dp"
+                android:gravity="center"
+                android:text="个人中心"
+                android:textColor="#fff" />
+        </com.loopeer.shadow.ShadowView>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="我加入的群组"
+        android:textColor="#000"
+        android:textSize="20sp" />
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/cl_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="10dp"
+            android:onClick="onFabClick"
+            android:src="@drawable/outline_add_white_48"
+            app:backgroundTint="@color/colorAccent"
+            app:layout_behavior="top.itning.smpandroid.ui.FabListBehavior" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>
