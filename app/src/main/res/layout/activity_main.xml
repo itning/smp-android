@@ -10,7 +10,10 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp">
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp">
 
         <TextView
             android:id="@+id/tv_hello"
@@ -29,15 +32,14 @@
             android:text="11月19日 11:14 星期二"
             android:textSize="15sp" />
 
-        <com.shehuan.niv.NiceImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentEnd="true"
-            android:src="@drawable/timg"
-            app:is_circle="true" />
+            android:src="@drawable/timg" />
     </RelativeLayout>
 
-    <LinearLayout
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -91,7 +93,7 @@
                 android:text="个人中心"
                 android:textColor="#fff" />
         </com.loopeer.shadow.ShadowView>
-    </LinearLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
     <TextView
         android:layout_width="wrap_content"

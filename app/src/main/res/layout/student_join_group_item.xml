@@ -13,7 +13,7 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="20dp">
 
-        <top.itning.smpandroid.RoundBackChange
+        <top.itning.smpandroid.ui.view.RoundBackChange
             android:id="@+id/round"
             android:layout_width="15dp"
             android:layout_height="15dp"

@@ -1,4 +1,4 @@
-package top.itning.smpandroid;
+package top.itning.smpandroid.ui.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -10,7 +10,11 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 
+import top.itning.smpandroid.R;
+
 /**
+ * 小圆点
+ *
  * @author itning
  */
 public class RoundBackChange extends View {

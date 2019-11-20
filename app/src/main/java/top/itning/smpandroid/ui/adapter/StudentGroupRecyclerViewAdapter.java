@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import top.itning.smpandroid.R;
-import top.itning.smpandroid.RoundBackChange;
+import top.itning.smpandroid.ui.view.RoundBackChange;
 import top.itning.smpandroid.entity.Group;
 
 /**
