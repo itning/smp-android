@@ -15,6 +15,7 @@
         toolbar:title="群组详情" />
 
     <com.loopeer.shadow.ShadowView
+        android:id="@+id/sv"
         android:layout_width="250dp"
         android:layout_height="250dp"
         android:layout_gravity="center_horizontal"

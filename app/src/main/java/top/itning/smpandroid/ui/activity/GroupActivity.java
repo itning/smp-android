@@ -1,5 +1,7 @@
 package top.itning.smpandroid.ui.activity;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -11,12 +13,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.snackbar.Snackbar;
+import com.loopeer.shadow.ShadowView;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,6 +30,7 @@ import top.itning.smpandroid.R;
 import top.itning.smpandroid.entity.Group;
 import top.itning.smpandroid.entity.StudentGroupCheck;
 import top.itning.smpandroid.ui.adapter.StudentGroupCheckRecylerViewAdapter;
+import top.itning.smpandroid.ui.interpolator.BraetheInterpolator;
 
 /**
  * @author itning
@@ -50,6 +55,7 @@ public class GroupActivity extends AppCompatActivity {
         initToolBar();
         initSwipeRefreshLayout();
         initRecyclerView();
+        initShadowViewAnimator();
     }
 
     private void initToolBar() {
@@ -110,6 +116,28 @@ public class GroupActivity extends AppCompatActivity {
                 Snackbar.make(findViewById(R.id.cl_content), "已刷新", Snackbar.LENGTH_LONG).show();
             }, 4000);
         });
+    }
+
+    private void initShadowViewAnimator() {
+        ShadowView shadowView = findViewById(R.id.sv);
+        int c1 = ContextCompat.getColor(this, R.color.class_color_1);
+        int c2 = ContextCompat.getColor(this, R.color.class_color_2);
+        int c6 = ContextCompat.getColor(this, R.color.class_color_6);
+        int c7 = ContextCompat.getColor(this, R.color.class_color_7);
+        ObjectAnimator alphaAnimator1 = ObjectAnimator.ofArgb(shadowView, "backgroundClr", c1, c2, c6, c7);
+        alphaAnimator1.setDuration(10000);
+        //使用自定义的插值器
+        alphaAnimator1.setInterpolator(BraetheInterpolator.getSingleInstance());
+        alphaAnimator1.setRepeatCount(ValueAnimator.INFINITE);
+
+        ObjectAnimator alphaAnimator2 = ObjectAnimator.ofArgb(shadowView, "shadowColor", c1, c2, c6, c7);
+        alphaAnimator2.setDuration(10000);
+        //使用自定义的插值器
+        alphaAnimator2.setInterpolator(BraetheInterpolator.getSingleInstance());
+        alphaAnimator2.setRepeatCount(ValueAnimator.INFINITE);
+
+        alphaAnimator1.start();
+        alphaAnimator2.start();
     }
 
 
