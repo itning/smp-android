@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,9 +13,19 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import top.itning.smpandroid.R;
 import top.itning.smpandroid.entity.Group;
 import top.itning.smpandroid.ui.adapter.StudentGroupRecyclerViewAdapter;
@@ -24,6 +35,7 @@ import top.itning.smpandroid.ui.adapter.StudentGroupRecyclerViewAdapter;
  */
 public class MainActivity extends AppCompatActivity implements StudentGroupRecyclerViewAdapter.OnItemClickListener<Group> {
     private static final String TAG = "MainActivity";
+    private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL = ThreadLocal.withInitial(() -> new SimpleDateFormat("MM月dd日 HH:mm E", Locale.CHINA));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +45,40 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
     }
 
     private void initView() {
+        initDateView();
         initSwipeRefreshLayout();
         initRecyclerView();
+    }
+
+    private void initDateView() {
+        Observable
+                .fromCallable(() -> Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL.get()).format(new Date()))
+                .repeatWhen(objectObservable -> objectObservable.delay(5, TimeUnit.SECONDS))
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    private TextView tv;
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        tv = findViewById(R.id.tv_time);
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        tv.setText(s);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     private void initSwipeRefreshLayout() {
