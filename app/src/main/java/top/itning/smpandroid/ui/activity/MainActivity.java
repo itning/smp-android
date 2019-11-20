@@ -3,16 +3,21 @@ package top.itning.smpandroid.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,6 +42,8 @@ import top.itning.smpandroid.ui.adapter.StudentGroupRecyclerViewAdapter;
 public class MainActivity extends AppCompatActivity implements StudentGroupRecyclerViewAdapter.OnItemClickListener<Group> {
     private static final String TAG = "MainActivity";
     private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL = ThreadLocal.withInitial(() -> new SimpleDateFormat("MM月dd日 HH:mm E", Locale.CHINA));
+    @Nullable
+    private TextInputLayout textInputLayout = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,7 +137,28 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
     }
 
     public void onFabClick(View view) {
-
+        AlertDialog alertDialog = new AlertDialog.Builder(this)
+                .setTitle("加入群组")
+                .setView(R.layout.alert_add_group)
+                .setNegativeButton("加入", (dialog, which) -> {
+                    if (textInputLayout != null) {
+                        EditText editText = textInputLayout.getEditText();
+                        if (editText != null) {
+                            Editable editable = editText.getText();
+                            Log.d(TAG, editable.toString());
+                        }
+                    }
+                })
+                .setPositiveButton("取消", null)
+                .show();
+        textInputLayout = alertDialog.findViewById(R.id.ti_layout);
+        if (textInputLayout != null) {
+            textInputLayout.setCounterEnabled(true);
+            EditText editText = textInputLayout.getEditText();
+            if (editText != null) {
+                editText.setSingleLine();
+            }
+        }
     }
 
     @Override
