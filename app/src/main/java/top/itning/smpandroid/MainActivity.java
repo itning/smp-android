@@ -1,13 +1,14 @@
 package top.itning.smpandroid;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -31,6 +32,26 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
     }
 
     private void initView() {
+        initSwipeRefreshLayout();
+        initRecyclerView();
+    }
+
+    private void initSwipeRefreshLayout() {
+        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.srl);
+        swipeRefreshLayout.setColorSchemeResources(
+                R.color.colorPrimary, R.color.colorAccent, R.color.class_color_1,
+                R.color.class_color_2, R.color.class_color_3, R.color.class_color_4,
+                R.color.class_color_5, R.color.class_color_6, R.color.class_color_7
+        );
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            new Handler().postDelayed(() -> {
+                swipeRefreshLayout.setRefreshing(false);
+                Snackbar.make(findViewById(R.id.cl_content), "已刷新", Snackbar.LENGTH_LONG).show();
+            }, 4000);
+        });
+    }
+
+    private void initRecyclerView() {
         RecyclerView rv = findViewById(R.id.recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         rv.setLayoutManager(layoutManager);
@@ -69,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
     @Override
     public void onItemClick(View view, Group object) {
         Log.d(TAG, object.toString());
-        CoordinatorLayout coordinatorLayout = findViewById(R.id.cl_content);
-        Snackbar.make(coordinatorLayout, object.toString(), Snackbar.LENGTH_LONG).show();
+        Snackbar.make(findViewById(R.id.cl_content), object.toString(), Snackbar.LENGTH_LONG).show();
     }
 }
