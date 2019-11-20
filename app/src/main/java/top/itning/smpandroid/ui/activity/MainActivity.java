@@ -133,7 +133,17 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
     }
 
     public void onShadowClick(View view) {
+        switch (view.getId()) {
+            case R.id.btn_room: {
+                startActivity(new Intent(this, RoomActivity.class));
+                break;
+            }
+            case R.id.btn_personal: {
 
+                break;
+            }
+            default:
+        }
     }
 
     public void onFabClick(View view) {

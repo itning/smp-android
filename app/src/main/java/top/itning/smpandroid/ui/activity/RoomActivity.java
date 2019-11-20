@@ -4,13 +4,10 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -27,28 +24,21 @@ import java.util.Date;
 import java.util.List;
 
 import top.itning.smpandroid.R;
-import top.itning.smpandroid.entity.Group;
-import top.itning.smpandroid.entity.StudentGroupCheck;
-import top.itning.smpandroid.ui.adapter.StudentGroupCheckRecylerViewAdapter;
+import top.itning.smpandroid.entity.RoomCheck;
+import top.itning.smpandroid.ui.adapter.StudentRoomCheckRecyclerViewAdapter;
 import top.itning.smpandroid.ui.interpolator.BraetheInterpolator;
 
 /**
  * @author itning
  */
-public class GroupActivity extends AppCompatActivity {
-    private final static String TAG = "GroupActivity";
-
-    @Nullable
-    private Group group;
+public class RoomActivity extends AppCompatActivity {
+    private static final String TAG = "RoomActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_group);
-        group = (Group) getIntent().getSerializableExtra("data");
+        setContentView(R.layout.activity_room);
         initView();
-
-        Log.d(TAG, group == null ? "null" : group.toString());
     }
 
     private void initView() {
@@ -66,41 +56,34 @@ public class GroupActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowHomeEnabled(true);
         }
-        toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.item_exit_group) {
-                Log.d(TAG, "退出群组");
-                return true;
-            }
-            return false;
-        });
     }
 
     private void initRecyclerView() {
         RecyclerView rv = findViewById(R.id.recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         rv.setLayoutManager(layoutManager);
-        List<StudentGroupCheck> list = new ArrayList<>();
+        List<RoomCheck> list = new ArrayList<>();
         init(list);
-        rv.setAdapter(new StudentGroupCheckRecylerViewAdapter(list, this));
+        rv.setAdapter(new StudentRoomCheckRecyclerViewAdapter(list, this));
     }
 
-    private void init(List<StudentGroupCheck> list) {
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
+    private void init(List<RoomCheck> list) {
+        list.add(new RoomCheck(new Date()));
+        list.add(new RoomCheck(new Date()));
+        list.add(new RoomCheck(new Date()));
+        list.add(new RoomCheck(new Date()));
+        list.add(new RoomCheck(new Date()));
+        list.add(new RoomCheck(new Date()));
+        list.add(new RoomCheck(new Date()));
+        list.add(new RoomCheck(new Date()));
+        list.add(new RoomCheck(new Date()));
+        list.add(new RoomCheck(new Date()));
+        list.add(new RoomCheck(new Date()));
+        list.add(new RoomCheck(new Date()));
+        list.add(new RoomCheck(new Date()));
+        list.add(new RoomCheck(new Date()));
+        list.add(new RoomCheck(new Date()));
+        list.add(new RoomCheck(new Date()));
     }
 
     private void initSwipeRefreshLayout() {
@@ -140,13 +123,6 @@ public class GroupActivity extends AppCompatActivity {
         alphaAnimator2.start();
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_group, menu);
-        return true;
-    }
-
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -157,6 +133,6 @@ public class GroupActivity extends AppCompatActivity {
     }
 
     public void onShadowClick(View view) {
-        Snackbar.make(findViewById(R.id.cl_content), "老师没有开启签到", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(findViewById(R.id.cl_content), "还没有到打卡时间", Snackbar.LENGTH_LONG).show();
     }
 }
