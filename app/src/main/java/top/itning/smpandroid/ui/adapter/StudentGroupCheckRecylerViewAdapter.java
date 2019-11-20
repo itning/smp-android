@@ -8,69 +8,56 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 import top.itning.smpandroid.R;
+import top.itning.smpandroid.entity.StudentGroupCheck;
 import top.itning.smpandroid.ui.view.RoundBackChange;
-import top.itning.smpandroid.entity.Group;
 
 /**
  * @author itning
  */
-public class StudentGroupRecyclerViewAdapter extends RecyclerView.Adapter<StudentGroupRecyclerViewAdapter.ViewHolder> implements View.OnClickListener {
-    private final Context context;
-    private final OnItemClickListener<Group> onItemClickListener;
-    private final List<Group> groupList;
+public class StudentGroupCheckRecylerViewAdapter extends RecyclerView.Adapter<StudentGroupCheckRecylerViewAdapter.ViewHolder> {
+    private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.CHINA));
+    private final List<StudentGroupCheck> studentGroupCheckList;
+    private Context context;
     private final List<Integer> colorList = new ArrayList<>(7);
     private int nexIndex;
 
-    public StudentGroupRecyclerViewAdapter(@NonNull List<Group> groupList, @NonNull Context context, @Nullable OnItemClickListener<Group> onItemClickListener) {
+
+    public StudentGroupCheckRecylerViewAdapter(@NonNull List<StudentGroupCheck> studentGroupCheckList, @NonNull Context context) {
+        this.studentGroupCheckList = studentGroupCheckList;
         this.context = context;
-        this.onItemClickListener = onItemClickListener;
-        this.groupList = groupList;
         initColorArray();
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_student_join_group, parent, false);
-        view.setOnClickListener(this);
-        return new ViewHolder(view);
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_student_group_check, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Group group = groupList.get(position);
-        holder.itemView.setTag(group);
-        holder.peopleCount.setText(MessageFormat.format("{0}人", group.getCount()));
-        holder.className.setText(group.getClassName());
-        holder.teacherName.setText(group.getTeacherName());
+        StudentGroupCheck studentGroupCheck = studentGroupCheckList.get(position);
+        holder.date.setText(Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL.get()).format(studentGroupCheck.getCheckDate()));
         holder.roundBackChange.setBackColor(getNextColor());
     }
 
     @Override
     public int getItemCount() {
-        return groupList.size();
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (onItemClickListener != null) {
-            onItemClickListener.onItemClick(v, (Group) v.getTag());
-        }
+        return studentGroupCheckList.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView className;
-        private TextView teacherName;
-        private TextView peopleCount;
+        private TextView date;
         private RoundBackChange roundBackChange;
 
 
@@ -80,21 +67,9 @@ public class StudentGroupRecyclerViewAdapter extends RecyclerView.Adapter<Studen
         }
 
         private void set(View itemView) {
-            this.className = itemView.findViewById(R.id.tv_class);
-            this.teacherName = itemView.findViewById(R.id.tv_teacher);
-            this.peopleCount = itemView.findViewById(R.id.tv_people);
+            this.date = itemView.findViewById(R.id.tv_date);
             this.roundBackChange = itemView.findViewById(R.id.round);
         }
-    }
-
-    public interface OnItemClickListener<T> {
-        /**
-         * 当每一项点击时
-         *
-         * @param view   View
-         * @param object 对象
-         */
-        void onItemClick(View view, T object);
     }
 
     /**

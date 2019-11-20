@@ -1,5 +1,6 @@
 package top.itning.smpandroid.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -135,6 +136,8 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
     @Override
     public void onItemClick(View view, Group object) {
         Log.d(TAG, object.toString());
-        Snackbar.make(findViewById(R.id.cl_content), object.toString(), Snackbar.LENGTH_LONG).show();
+        Intent intent = new Intent(this, GroupActivity.class);
+        intent.putExtra("data", object);
+        startActivity(intent);
     }
 }
