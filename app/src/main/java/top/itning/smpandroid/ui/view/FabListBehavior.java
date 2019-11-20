@@ -1,4 +1,4 @@
-package top.itning.smpandroid.ui;
+package top.itning.smpandroid.ui.view;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".ui.activity.MainActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -128,6 +128,6 @@
             android:onClick="onFabClick"
             android:src="@drawable/outline_add_white_48"
             app:backgroundTint="@color/colorAccent"
-            app:layout_behavior="top.itning.smpandroid.ui.FabListBehavior" />
+            app:layout_behavior="top.itning.smpandroid.ui.view.FabListBehavior" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </androidx.appcompat.widget.LinearLayoutCompat>

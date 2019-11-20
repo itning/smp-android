@@ -1,4 +1,4 @@
-package top.itning.smpandroid;
+package top.itning.smpandroid.ui.activity;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,6 +15,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.List;
 
+import top.itning.smpandroid.R;
 import top.itning.smpandroid.entity.Group;
 import top.itning.smpandroid.ui.adapter.StudentGroupRecyclerViewAdapter;
 
