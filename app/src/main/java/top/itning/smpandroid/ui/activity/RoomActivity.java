@@ -63,16 +63,17 @@ public class RoomActivity extends AppCompatActivity {
             if (aMapLocation != null) {
                 if (aMapLocation.getErrorCode() == 0) {
                     //可在其中解析amapLocation获取相应内容。
-                    Log.d(TAG, aMapLocation.toStr());
-                    if (!"".equals(aMapLocation.getDescription()) && addressTextView != null) {
-                        addressTextView.setText(aMapLocation.getDescription());
-                    } else {
-                        StringBuilder sb = new StringBuilder()
-                                .append("经度：")
-                                .append(DECIMAL_FORMAT.format(aMapLocation.getLongitude()))
-                                .append(" 纬度：")
-                                .append(DECIMAL_FORMAT.format(aMapLocation.getLatitude()));
-                        addressTextView.setText(sb);
+                    if (addressTextView != null) {
+                        if (!"".equals(aMapLocation.getDescription())) {
+                            addressTextView.setText(aMapLocation.getDescription());
+                        } else {
+                            StringBuilder sb = new StringBuilder()
+                                    .append("经度：")
+                                    .append(DECIMAL_FORMAT.format(aMapLocation.getLongitude()))
+                                    .append(" 纬度：")
+                                    .append(DECIMAL_FORMAT.format(aMapLocation.getLatitude()));
+                            addressTextView.setText(sb);
+                        }
                     }
                 } else {
                     //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
