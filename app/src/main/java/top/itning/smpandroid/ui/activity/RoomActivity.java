@@ -5,21 +5,26 @@ import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.snackbar.Snackbar;
 import com.loopeer.shadow.ShadowView;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,15 +39,74 @@ import top.itning.smpandroid.ui.interpolator.BraetheInterpolator;
  */
 public class RoomActivity extends AppCompatActivity {
     private static final String TAG = "RoomActivity";
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.000");
+    private AMapLocationClient locationClient = null;
+    private AppCompatTextView addressTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room);
         initView();
+        initLocation();
+    }
+
+    private void initLocation() {
+        AMapLocationClient.setApiKey("d4be613647d43ff91487e2ef7d11ce79");
+        // DPoint startLatlng, DPoint endLatlng
+        // lat lon  return 米
+        // CoordinateConverter.calculateLineDistance(new DPoint(45.742225620811254, 127.21238958865777), new DPoint());
+        //初始化定位
+        locationClient = new AMapLocationClient(getApplicationContext());
+        //设置定位回调监听
+        locationClient.setLocationListener(aMapLocation -> {
+            if (aMapLocation != null) {
+                if (aMapLocation.getErrorCode() == 0) {
+                    //可在其中解析amapLocation获取相应内容。
+                    Log.d(TAG, aMapLocation.toStr());
+                    if (!"".equals(aMapLocation.getDescription()) && addressTextView != null) {
+                        addressTextView.setText(aMapLocation.getDescription());
+                    } else {
+                        StringBuilder sb = new StringBuilder()
+                                .append("经度：")
+                                .append(DECIMAL_FORMAT.format(aMapLocation.getLongitude()))
+                                .append(" 纬度：")
+                                .append(DECIMAL_FORMAT.format(aMapLocation.getLatitude()));
+                        addressTextView.setText(sb);
+                    }
+                } else {
+                    //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
+                    Log.e(TAG, "location Error, ErrCode:"
+                            + aMapLocation.getErrorCode() + ", errInfo:"
+                            + aMapLocation.getErrorInfo());
+                }
+            }
+        });
+        //初始化AMapLocationClientOption对象
+        AMapLocationClientOption locationOption = new AMapLocationClientOption();
+        AMapLocationClientOption option = new AMapLocationClientOption();
+
+        // 设置定位场景，目前支持三种场景（签到、出行、运动，默认无场景）
+        option.setLocationPurpose(AMapLocationClientOption.AMapLocationPurpose.SignIn);
+        if (null != locationClient) {
+            locationClient.setLocationOption(option);
+            //设置场景模式后最好调用一次stop，再调用start以保证场景模式生效
+            locationClient.stopLocation();
+            locationClient.startLocation();
+        }
+        locationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+        //设置是否返回地址信息（默认返回地址信息）
+        locationOption.setNeedAddress(true);
+        //设置是否允许模拟位置,默认为true，允许模拟位置
+        locationOption.setMockEnable(false);
+        //给定位客户端对象设置定位参数
+        locationClient.setLocationOption(locationOption);
+        //启动定位
+        locationClient.startLocation();
     }
 
     private void initView() {
+        addressTextView = findViewById(R.id.tv_address);
         initToolBar();
         initSwipeRefreshLayout();
         initRecyclerView();
@@ -131,6 +195,13 @@ public class RoomActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        locationClient.stopLocation();
+        locationClient.onDestroy();
+        super.onBackPressed();
     }
 
     public void onShadowClick(View view) {
