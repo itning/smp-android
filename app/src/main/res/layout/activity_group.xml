@@ -63,6 +63,13 @@
         </LinearLayout>
     </com.loopeer.shadow.ShadowView>
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_address"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:text="获取位置信息中..." />
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/cl_content"
         android:layout_width="match_parent"
