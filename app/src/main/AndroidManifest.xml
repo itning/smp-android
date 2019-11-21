@@ -15,6 +15,28 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
+    <uses-feature
+        android:name="android.hardware.camera.front"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.location"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.location.network"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.wifi"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.screen.portrait"
+        android:required="true" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -22,10 +44,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.activity.FaceActivity" />
-        <activity android:name=".ui.activity.RoomActivity" />
-        <activity android:name=".ui.activity.GroupActivity" />
-        <activity android:name=".ui.activity.MainActivity">
+        <activity
+            android:name=".ui.activity.FaceActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.RoomActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.GroupActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

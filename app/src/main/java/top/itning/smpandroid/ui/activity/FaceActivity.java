@@ -200,7 +200,7 @@ public class FaceActivity extends AppCompatActivity {
                                     int x = rect.x();
                                     int y = rect.y();
                                     opencv_imgproc.rectangle(mat, new Point(x, y), new Point(x + rect.width(), y + rect.height()), SCALAR);
-                                    opencv_imgcodecs.imwrite(new File(activity.getFilesDir() + "/" + System.currentTimeMillis() + ".jpg").getPath(), mat);
+                                    opencv_imgcodecs.imwrite(new File(activity.getExternalCacheDir() + "/" + System.currentTimeMillis() + ".jpg").getPath(), mat);
                                     saved = true;
                                 }
                                 if (saved) {
