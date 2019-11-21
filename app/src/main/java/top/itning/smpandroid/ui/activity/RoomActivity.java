@@ -2,6 +2,7 @@ package top.itning.smpandroid.ui.activity;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
@@ -134,5 +135,6 @@ public class RoomActivity extends AppCompatActivity {
 
     public void onShadowClick(View view) {
         Snackbar.make(findViewById(R.id.cl_content), "还没有到打卡时间", Snackbar.LENGTH_LONG).show();
+        startActivity(new Intent(this, FaceActivity.class));
     }
 }
