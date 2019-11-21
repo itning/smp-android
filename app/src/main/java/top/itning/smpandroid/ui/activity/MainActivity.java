@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
                 break;
             }
             case R.id.btn_personal: {
-
+                startActivity(new Intent(this, PersonalActivity.class));
                 break;
             }
             default:
