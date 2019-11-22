@@ -83,8 +83,9 @@ public final class HttpHelper {
             if (throwable instanceof HttpException) {
                 HttpException httpException = (HttpException) throwable;
                 if (httpException.code() == UNAUTHORIZED) {
-                    activity.startActivity(new Intent(activity, LoginActivity.class));
-                    activity.finish();
+                    Intent intent = new Intent(activity, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    activity.startActivity(intent);
                 }
             } else {
                 if (throwableConsumer != null) {

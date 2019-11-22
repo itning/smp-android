@@ -89,11 +89,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
-
-    @Override
     protected void onDestroy() {
         if (disposable != null && !disposable.isDisposed()) {
             disposable.dispose();

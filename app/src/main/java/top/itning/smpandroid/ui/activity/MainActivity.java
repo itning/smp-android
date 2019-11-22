@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
         ButterKnife.bind(this);
         checkPermissions();
         initView();
+        App.smpDataSharedPreferences.edit().remove("token").apply();
     }
 
     private void initView() {
