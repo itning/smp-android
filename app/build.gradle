@@ -54,10 +54,10 @@ dependencies {
     implementation 'cat.ereza:customactivityoncrash:2.2.0'
     implementation 'org.bytedeco:javacv:1.5.2'
     implementation group: 'org.bytedeco', name: 'opencv', version: '4.1.2-1.5.2'
-    implementation group: 'org.bytedeco', name: 'opencv', version: '4.1.2-1.5.2', classifier: "android-x86_64"
+    //implementation group: 'org.bytedeco', name: 'opencv', version: '4.1.2-1.5.2', classifier: "android-x86_64"
     implementation group: 'org.bytedeco', name: 'opencv', version: '4.1.2-1.5.2', classifier: "android-arm64"
     implementation group: 'org.bytedeco', name: 'openblas', version: '0.3.7-1.5.2'
-    implementation group: 'org.bytedeco', name: 'openblas', version: '0.3.7-1.5.2', classifier: "android-x86_64"
+    //implementation group: 'org.bytedeco', name: 'openblas', version: '0.3.7-1.5.2', classifier: "android-x86_64"
     implementation group: 'org.bytedeco', name: 'openblas', version: '0.3.7-1.5.2', classifier: "android-arm64"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
