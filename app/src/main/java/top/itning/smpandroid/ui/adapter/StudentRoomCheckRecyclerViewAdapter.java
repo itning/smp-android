@@ -18,7 +18,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import top.itning.smpandroid.R;
-import top.itning.smpandroid.entity.RoomCheck;
+import top.itning.smpandroid.entity.StudentRoomCheck;
 import top.itning.smpandroid.ui.view.RoundBackChange;
 
 /**
@@ -26,14 +26,14 @@ import top.itning.smpandroid.ui.view.RoundBackChange;
  */
 public class StudentRoomCheckRecyclerViewAdapter extends RecyclerView.Adapter<StudentRoomCheckRecyclerViewAdapter.ViewHolder> {
     private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.CHINA));
-    private final List<RoomCheck> roomCheckList;
+    private final List<StudentRoomCheck> studentRoomCheckList;
     private Context context;
     private final List<Integer> colorList = new ArrayList<>(7);
     private int nexIndex;
 
 
-    public StudentRoomCheckRecyclerViewAdapter(@NonNull List<RoomCheck> roomCheckList, @NonNull Context context) {
-        this.roomCheckList = roomCheckList;
+    public StudentRoomCheckRecyclerViewAdapter(@NonNull List<StudentRoomCheck> studentRoomCheckList, @NonNull Context context) {
+        this.studentRoomCheckList = studentRoomCheckList;
         this.context = context;
         initColorArray();
     }
@@ -46,14 +46,14 @@ public class StudentRoomCheckRecyclerViewAdapter extends RecyclerView.Adapter<St
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        RoomCheck roomCheck = roomCheckList.get(position);
-        holder.date.setText(Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL.get()).format(roomCheck.getCheckDate()));
+        StudentRoomCheck studentRoomCheck = studentRoomCheckList.get(position);
+        holder.date.setText(Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL.get()).format(studentRoomCheck.getCheckTime()));
         holder.roundBackChange.setBackColor(getNextColor());
     }
 
     @Override
     public int getItemCount() {
-        return roomCheckList.size();
+        return studentRoomCheckList.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
