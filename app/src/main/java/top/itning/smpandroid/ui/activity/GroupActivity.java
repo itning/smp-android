@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,7 +31,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import top.itning.smpandroid.R;
+import top.itning.smpandroid.R2;
 import top.itning.smpandroid.entity.Group;
 import top.itning.smpandroid.entity.StudentGroupCheck;
 import top.itning.smpandroid.ui.adapter.StudentGroupCheckRecylerViewAdapter;
@@ -43,7 +47,18 @@ public class GroupActivity extends AppCompatActivity {
     private final static String TAG = "GroupActivity";
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.000");
     private AMapLocationClient locationClient = null;
-    private AppCompatTextView addressTextView;
+    @BindView(R2.id.tv_address)
+    AppCompatTextView addressTextView;
+    @BindView(R2.id.tb)
+    MaterialToolbar toolbar;
+    @BindView(R2.id.recycler_view)
+    RecyclerView rv;
+    @BindView(R2.id.srl)
+    SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R2.id.cl_content)
+    CoordinatorLayout coordinatorLayout;
+    @BindView(R2.id.sv)
+    ShadowView shadowView;
     @Nullable
     private Group group;
 
@@ -51,6 +66,7 @@ public class GroupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group);
+        ButterKnife.bind(this);
         group = (Group) getIntent().getSerializableExtra("data");
         initView();
         initLocation();
@@ -113,7 +129,6 @@ public class GroupActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        addressTextView = findViewById(R.id.tv_address);
         initToolBar();
         initSwipeRefreshLayout();
         initRecyclerView();
@@ -121,7 +136,6 @@ public class GroupActivity extends AppCompatActivity {
     }
 
     private void initToolBar() {
-        MaterialToolbar toolbar = findViewById(R.id.tb);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -138,7 +152,6 @@ public class GroupActivity extends AppCompatActivity {
     }
 
     private void initRecyclerView() {
-        RecyclerView rv = findViewById(R.id.recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         rv.setLayoutManager(layoutManager);
         List<StudentGroupCheck> list = new ArrayList<>();
@@ -166,7 +179,6 @@ public class GroupActivity extends AppCompatActivity {
     }
 
     private void initSwipeRefreshLayout() {
-        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.srl);
         swipeRefreshLayout.setColorSchemeResources(
                 R.color.colorPrimary, R.color.colorAccent, R.color.class_color_1,
                 R.color.class_color_2, R.color.class_color_3, R.color.class_color_4,
@@ -175,13 +187,12 @@ public class GroupActivity extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             new Handler().postDelayed(() -> {
                 swipeRefreshLayout.setRefreshing(false);
-                Snackbar.make(findViewById(R.id.cl_content), "已刷新", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(coordinatorLayout, "已刷新", Snackbar.LENGTH_LONG).show();
             }, 4000);
         });
     }
 
     private void initShadowViewAnimator() {
-        ShadowView shadowView = findViewById(R.id.sv);
         int c1 = ContextCompat.getColor(this, R.color.class_color_1);
         int c2 = ContextCompat.getColor(this, R.color.class_color_2);
         int c6 = ContextCompat.getColor(this, R.color.class_color_6);
@@ -226,6 +237,6 @@ public class GroupActivity extends AppCompatActivity {
     }
 
     public void onShadowClick(View view) {
-        Snackbar.make(findViewById(R.id.cl_content), "老师没有开启签到", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(coordinatorLayout, "老师没有开启签到", Snackbar.LENGTH_LONG).show();
     }
 }

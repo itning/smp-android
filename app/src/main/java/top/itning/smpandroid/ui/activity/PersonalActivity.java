@@ -9,17 +9,23 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.appbar.MaterialToolbar;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import top.itning.smpandroid.R;
+import top.itning.smpandroid.R2;
 
 /**
  * @author itning
  */
 public class PersonalActivity extends AppCompatActivity {
+    @BindView(R2.id.tb)
+    MaterialToolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal);
+        ButterKnife.bind(this);
         initView();
     }
 
@@ -28,7 +34,6 @@ public class PersonalActivity extends AppCompatActivity {
     }
 
     private void initToolBar() {
-        MaterialToolbar toolbar = findViewById(R.id.tb);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

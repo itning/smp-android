@@ -10,7 +10,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import top.itning.smpandroid.R;
+import top.itning.smpandroid.R2;
 import top.itning.smpandroid.ui.view.CustomVideoView;
 
 /**
@@ -18,20 +21,20 @@ import top.itning.smpandroid.ui.view.CustomVideoView;
  */
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
-    private CustomVideoView videoView;
+    @BindView(R2.id.videoview)
+    CustomVideoView videoView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        ButterKnife.bind(this);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         initView();
     }
 
     private void initView() {
-        //加载视频资源控件
-        videoView = findViewById(R.id.videoview);
         //设置播放加载路径
         // Uri.parse("file:///android_asset/aa.mp4")
         videoView.setVideoURI(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.login));

@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -35,12 +36,14 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.reactivex.Observable;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import top.itning.smpandroid.R;
+import top.itning.smpandroid.R2;
 import top.itning.smpandroid.entity.Group;
 import top.itning.smpandroid.ui.adapter.StudentGroupRecyclerViewAdapter;
 
@@ -52,13 +55,23 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
     private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL = ThreadLocal.withInitial(() -> new SimpleDateFormat("MM月dd日 HH:mm E", Locale.CHINA));
     private static final int SETTING_REQUEST_CODE = 104;
     private static final int MUST_PERMISSIONS_REQUEST_CODE = 100;
+    @BindView(R2.id.tv_time)
+    TextView tv;
+    @BindView(R2.id.srl)
+    SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R2.id.cl_content)
+    CoordinatorLayout coordinatorLayout;
+    @BindView(R2.id.recycler_view)
+    RecyclerView rv;
     @Nullable
     private TextInputLayout textInputLayout = null;
+    private Disposable disposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         checkPermissions();
         initView();
     }
@@ -70,38 +83,15 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
     }
 
     private void initDateView() {
-        Observable
+        disposable = Observable
                 .fromCallable(() -> Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL.get()).format(new Date()))
                 .repeatWhen(objectObservable -> objectObservable.delay(5, TimeUnit.SECONDS))
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<String>() {
-                    private TextView tv;
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        tv = findViewById(R.id.tv_time);
-                    }
-
-                    @Override
-                    public void onNext(String s) {
-                        tv.setText(s);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
+                .subscribe(s -> tv.setText(s), throwable -> Log.e(TAG, "date error", throwable));
     }
 
     private void initSwipeRefreshLayout() {
-        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.srl);
         swipeRefreshLayout.setColorSchemeResources(
                 R.color.colorPrimary, R.color.colorAccent, R.color.class_color_1,
                 R.color.class_color_2, R.color.class_color_3, R.color.class_color_4,
@@ -110,13 +100,12 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
         swipeRefreshLayout.setOnRefreshListener(() -> {
             new Handler().postDelayed(() -> {
                 swipeRefreshLayout.setRefreshing(false);
-                Snackbar.make(findViewById(R.id.cl_content), "已刷新", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(coordinatorLayout, "已刷新", Snackbar.LENGTH_LONG).show();
             }, 4000);
         });
     }
 
     private void initRecyclerView() {
-        RecyclerView rv = findViewById(R.id.recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         rv.setLayoutManager(layoutManager);
         List<Group> list = new ArrayList<>();
@@ -241,5 +230,13 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
         if (requestCode == SETTING_REQUEST_CODE) {
             checkPermissions();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+        }
+        super.onBackPressed();
     }
 }

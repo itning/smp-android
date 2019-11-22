@@ -36,6 +36,8 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -44,6 +46,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import top.itning.smpandroid.R;
+import top.itning.smpandroid.R2;
 import top.itning.smpandroid.util.CameraUtils;
 
 /**
@@ -56,6 +59,8 @@ public class FaceActivity extends AppCompatActivity {
     private static final Scalar SCALAR = new Scalar(0, 255);
     private final Camera.PreviewCallback previewCallback;
     private Camera camera;
+    @BindView(R2.id.sv)
+    SurfaceView surfaceView;
 
     public FaceActivity() {
         previewCallback = new PreviewCallbackImpl(this);
@@ -65,6 +70,7 @@ public class FaceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_face);
+        ButterKnife.bind(this);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         init();
     }
@@ -90,7 +96,6 @@ public class FaceActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        SurfaceView surfaceView = findViewById(R.id.sv);
         SurfaceHolder holder = surfaceView.getHolder();
         holder.addCallback(new SurfaceHolder.Callback() {
             @Override
