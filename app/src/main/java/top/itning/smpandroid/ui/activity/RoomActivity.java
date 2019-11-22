@@ -34,6 +34,7 @@ import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.HttpException;
 import top.itning.smpandroid.R;
 import top.itning.smpandroid.R2;
 import top.itning.smpandroid.client.HttpHelper;
@@ -183,8 +184,18 @@ public class RoomActivity extends AppCompatActivity {
                     }
                     swipeRefreshLayout.setRefreshing(false);
                 }, throwable -> {
-                    Log.w(TAG, "网络请求出现问题", throwable);
                     swipeRefreshLayout.setRefreshing(false);
+                    if (throwable instanceof HttpException) {
+                        HttpException httpException = (HttpException) throwable;
+                        if (httpException.code() == HttpHelper.UNAUTHORIZED) {
+                            Log.d(TAG, "need re login");
+                        } else {
+                            Log.w(TAG, "unknow code" + httpException.code());
+                        }
+                    } else {
+                        Log.e(TAG, "网络请求出现问题", throwable);
+                        Snackbar.make(coordinatorLayout, "网络请求出现问题", Snackbar.LENGTH_LONG).show();
+                    }
                 });
     }
 

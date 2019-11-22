@@ -24,7 +24,7 @@ public final class HttpHelper {
     private static final String AUTHORIZATION = "Authorization";
     private static final String ACCEPT = "Accept";
     private static final String APPLICATION_JSON_VALUE = "application/json";
-    private static final int UNAUTHORIZED = 401;
+    public static final int UNAUTHORIZED = 401;
     /**
      * TODO 临时 BASE URL
      */
