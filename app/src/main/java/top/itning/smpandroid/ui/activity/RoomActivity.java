@@ -34,11 +34,10 @@ import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.HttpException;
 import top.itning.smpandroid.R;
 import top.itning.smpandroid.R2;
-import top.itning.smpandroid.client.HttpHelper;
-import top.itning.smpandroid.client.Page;
+import top.itning.smpandroid.client.http.HttpHelper;
+import top.itning.smpandroid.client.http.Page;
 import top.itning.smpandroid.client.RoomClient;
 import top.itning.smpandroid.entity.StudentRoomCheck;
 import top.itning.smpandroid.ui.adapter.StudentRoomCheckRecyclerViewAdapter;
@@ -183,20 +182,12 @@ public class RoomActivity extends AppCompatActivity {
                         rv.getAdapter().notifyDataSetChanged();
                     }
                     swipeRefreshLayout.setRefreshing(false);
-                }, throwable -> {
-                    swipeRefreshLayout.setRefreshing(false);
-                    if (throwable instanceof HttpException) {
-                        HttpException httpException = (HttpException) throwable;
-                        if (httpException.code() == HttpHelper.UNAUTHORIZED) {
-                            Log.d(TAG, "need re login");
-                        } else {
-                            Log.w(TAG, "unknow code" + httpException.code());
-                        }
-                    } else {
-                        Log.e(TAG, "网络请求出现问题", throwable);
-                        Snackbar.make(coordinatorLayout, "网络请求出现问题", Snackbar.LENGTH_LONG).show();
-                    }
-                });
+                }, HttpHelper.ErrorInvoke.get(this)
+                        .before(t -> swipeRefreshLayout.setRefreshing(false))
+                        .orElse(t -> {
+                            Log.w(TAG, "网络请求错误", t);
+                            Snackbar.make(coordinatorLayout, "网络请求错误", Snackbar.LENGTH_LONG).show();
+                        }));
     }
 
     private void initSwipeRefreshLayout() {

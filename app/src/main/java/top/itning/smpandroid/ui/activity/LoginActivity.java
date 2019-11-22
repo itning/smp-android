@@ -1,6 +1,7 @@
 package top.itning.smpandroid.ui.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,8 +13,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import top.itning.smpandroid.R;
 import top.itning.smpandroid.R2;
+import top.itning.smpandroid.client.LoginClient;
+import top.itning.smpandroid.client.http.HttpHelper;
 import top.itning.smpandroid.ui.view.CustomVideoView;
 
 /**
@@ -23,6 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     @BindView(R2.id.videoview)
     CustomVideoView videoView;
+    private Disposable disposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +69,35 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void handleLoginBtn(View view) {
-        startActivity(new Intent(this, MainActivity.class));
-        finish();
+        disposable = HttpHelper.get(LoginClient.class)
+                .login("a", "a")
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(restModel -> {
+                    String token = restModel.getData();
+                    if (token != null && !"".equals(token.trim())) {
+                        SharedPreferences sharedPreferences = getSharedPreferences("smp_data", MODE_PRIVATE);
+                        if (sharedPreferences.edit().putString("token", token).commit()) {
+                            startActivity(new Intent(this, MainActivity.class));
+                            finish();
+                        }
+                    }
+                }, throwable -> {
+                    Log.w(TAG, "登陆失败", throwable);
+                    Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_LONG).show();
+                });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+        }
+        super.onDestroy();
     }
 }

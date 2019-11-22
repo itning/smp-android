@@ -3,6 +3,8 @@ package top.itning.smpandroid.client;
 import io.reactivex.Observable;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
+import top.itning.smpandroid.client.http.Page;
+import top.itning.smpandroid.client.http.RestModel;
 import top.itning.smpandroid.entity.StudentRoomCheck;
 
 /**

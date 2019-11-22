@@ -1,4 +1,4 @@
-package top.itning.smpandroid.client;
+package top.itning.smpandroid.client.http;
 
 import java.io.Serializable;
 import java.util.List;
