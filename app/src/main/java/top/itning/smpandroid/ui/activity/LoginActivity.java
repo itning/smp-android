@@ -10,6 +10,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,6 +30,8 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     @BindView(R2.id.videoview)
     CustomVideoView videoView;
+    @BindView(R2.id.iv_background)
+    AppCompatImageView imageView;
     private Disposable disposable;
 
     @Override
@@ -52,6 +55,7 @@ public class LoginActivity extends AppCompatActivity {
         videoView.setOnErrorListener((mp, what, extra) -> {
             Log.w(TAG, "extra is " + extra);
             Toast.makeText(this, "该设备不支持 " + extra, Toast.LENGTH_LONG).show();
+            imageView.setVisibility(View.VISIBLE);
             return true;
         });
     }
@@ -76,8 +80,8 @@ public class LoginActivity extends AppCompatActivity {
                 .subscribe(restModel -> {
                     String token = restModel.getData();
                     if (token != null && !"".equals(token.trim())) {
-                        SharedPreferences sharedPreferences = getSharedPreferences("smp_data", MODE_PRIVATE);
-                        if (sharedPreferences.edit().putString("token", token).commit()) {
+                        SharedPreferences sharedPreferences = getSharedPreferences(App.SHARED_PREFERENCES_OWN, MODE_PRIVATE);
+                        if (sharedPreferences.edit().putString(HttpHelper.TOKEN, token).commit()) {
                             startActivity(new Intent(this, MainActivity.class));
                             finish();
                         }

@@ -10,12 +10,14 @@ import androidx.annotation.Nullable;
  * @author itning
  */
 public class App extends Application {
+    public static final String SHARED_PREFERENCES_OWN = "smp_data";
+
     @Nullable
     public static SharedPreferences smpDataSharedPreferences;
 
     @Override
     public void onCreate() {
-        smpDataSharedPreferences = getSharedPreferences("smp_data", Context.MODE_PRIVATE);
+        smpDataSharedPreferences = getSharedPreferences(SHARED_PREFERENCES_OWN, Context.MODE_PRIVATE);
         super.onCreate();
     }
 

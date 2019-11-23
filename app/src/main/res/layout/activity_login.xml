@@ -10,6 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/back"
+        android:visibility="gone" />
+
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -48,8 +55,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:onClick="handleLoginBtn"
             android:backgroundTint="@color/colorAccent"
+            android:onClick="handleLoginBtn"
             android:text="立即登录"
             android:textAppearance="?android:attr/textAppearanceLargeInverse"
             android:textSize="16sp"

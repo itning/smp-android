@@ -1,5 +1,6 @@
 package top.itning.smpandroid.ui.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,8 +13,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import top.itning.smpandroid.R;
 import top.itning.smpandroid.R2;
+import top.itning.smpandroid.client.RoomClient;
+import top.itning.smpandroid.client.http.HttpHelper;
+import top.itning.smpandroid.client.http.Page;
+import top.itning.smpandroid.client.http.RestModel;
+import top.itning.smpandroid.entity.StudentRoomCheck;
 import top.itning.smpandroid.ui.view.CustomVideoView;
 
 /**
@@ -53,8 +63,39 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void nextActivity() {
-        startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-        finish();
+        // 判断没有TOKEN的情况
+        if ("".equals(getSharedPreferences(App.SHARED_PREFERENCES_OWN, Context.MODE_PRIVATE).getString(HttpHelper.TOKEN, "").trim())) {
+            startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+            finish();
+        } else {
+            HttpHelper.get(RoomClient.class)
+                    .getStudentCheckInfo(0, 1)
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<RestModel<Page<StudentRoomCheck>>>() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
+
+                        }
+
+                        @Override
+                        public void onNext(RestModel<Page<StudentRoomCheck>> pageRestModel) {
+                            startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                            finish();
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+                            finish();
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    });
+        }
     }
 
     @Override

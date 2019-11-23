@@ -27,6 +27,7 @@ import top.itning.smpandroid.ui.activity.LoginActivity;
  * @author itning
  */
 public final class HttpHelper {
+    public static final String TOKEN = "token";
     private static final String AUTHORIZATION = "Authorization";
     private static final String ACCEPT = "Accept";
     private static final String APPLICATION_JSON_VALUE = "application/json";
@@ -112,7 +113,7 @@ public final class HttpHelper {
         public Response intercept(@NotNull Chain chain) throws IOException {
             String token = "";
             if (App.smpDataSharedPreferences != null) {
-                token = App.smpDataSharedPreferences.getString("token", "");
+                token = App.smpDataSharedPreferences.getString(HttpHelper.TOKEN, "");
             }
             Request request = chain.request();
             Request newRequest = request
