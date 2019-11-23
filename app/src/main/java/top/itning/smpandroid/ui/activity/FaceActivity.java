@@ -1,5 +1,6 @@
 package top.itning.smpandroid.ui.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
@@ -200,16 +201,17 @@ public class FaceActivity extends AppCompatActivity {
                                 CASCADE_CLASSIFIER.detectMultiScale(mat, rectVector);
 
                                 boolean saved = false;
+                                String pathName = activity.getExternalCacheDir() + "/" + System.currentTimeMillis() + ".jpg";
                                 for (int i = 0; i < rectVector.size(); i++) {
                                     org.bytedeco.opencv.opencv_core.Rect rect = rectVector.get(i);
                                     int x = rect.x();
                                     int y = rect.y();
                                     opencv_imgproc.rectangle(mat, new Point(x, y), new Point(x + rect.width(), y + rect.height()), SCALAR);
-                                    opencv_imgcodecs.imwrite(new File(activity.getExternalCacheDir() + "/" + System.currentTimeMillis() + ".jpg").getPath(), mat);
+                                    opencv_imgcodecs.imwrite(new File(pathName).getPath(), mat);
                                     saved = true;
                                 }
                                 if (saved) {
-                                    activity.finishTask();
+                                    activity.finishTask(pathName);
 
                                 } else {
                                     activity.makeToast("没有检测到人脸，请再试一次");
@@ -240,16 +242,27 @@ public class FaceActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        this.setResult(RESULT_CANCELED);
+        super.onBackPressed();
+    }
+
     private void makeToast(@NonNull String msg) {
         runOnUiThread(() -> Toast.makeText(FaceActivity.this, msg, Toast.LENGTH_LONG).show());
     }
 
     /**
      * 任务完成
+     *
+     * @param pathName 文件路径
      */
-    private void finishTask() {
+    private void finishTask(@NonNull String pathName) {
         runOnUiThread(() -> {
-            Toast.makeText(FaceActivity.this, "打卡成功", Toast.LENGTH_LONG).show();
+            Toast.makeText(FaceActivity.this, "识别成功", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent();
+            intent.putExtra("pathName", pathName);
+            FaceActivity.this.setResult(RESULT_OK, intent);
             FaceActivity.this.finish();
         });
     }

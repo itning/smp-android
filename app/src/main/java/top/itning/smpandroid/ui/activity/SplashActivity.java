@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -51,9 +50,7 @@ public class SplashActivity extends AppCompatActivity {
         //播放
         videoView.start();
         //完成播放
-        videoView.setOnCompletionListener(mp -> {
-            new Handler().postDelayed(this::nextActivity, 5000);
-        });
+        videoView.setOnCompletionListener(mp -> nextActivity());
         videoView.setOnErrorListener((mp, what, extra) -> {
             Log.w(TAG, "extra is " + extra);
             Toast.makeText(this, "该设备不支持 " + extra, Toast.LENGTH_LONG).show();

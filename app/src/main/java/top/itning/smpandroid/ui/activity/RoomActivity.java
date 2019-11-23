@@ -2,6 +2,7 @@ package top.itning.smpandroid.ui.activity;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +27,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.snackbar.Snackbar;
 import com.loopeer.shadow.ShadowView;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,6 +40,9 @@ import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import top.itning.smpandroid.R;
 import top.itning.smpandroid.R2;
 import top.itning.smpandroid.client.RoomClient;
@@ -54,6 +59,7 @@ import top.itning.smpandroid.util.PageUtils;
  */
 public class RoomActivity extends AppCompatActivity {
     private static final String TAG = "RoomActivity";
+    public static final int START_FACE_ACTIVITY_REQUEST_CODE = 105;
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.000");
     private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.CHINA));
     private AMapLocationClient locationClient = null;
@@ -72,9 +78,14 @@ public class RoomActivity extends AppCompatActivity {
     @BindView(R2.id.tv_last_check_time)
     TextView lastCheckTimeTextView;
     private List<StudentRoomCheck> studentRoomCheckList;
+    @Nullable
     private Disposable disposable;
     @Nullable
     private Page<StudentRoomCheck> studentRoomCheckPage;
+    @Nullable
+    private Disposable allowCheckDisposable;
+    @Nullable
+    private Disposable uploadCheckInfoDisposable;
 
 
     @Override
@@ -255,12 +266,83 @@ public class RoomActivity extends AppCompatActivity {
         if (disposable != null && !disposable.isDisposed()) {
             disposable.dispose();
         }
+        if (allowCheckDisposable != null && !allowCheckDisposable.isDisposed()) {
+            allowCheckDisposable.dispose();
+        }
+        if (uploadCheckInfoDisposable != null && !uploadCheckInfoDisposable.isDisposed()) {
+            uploadCheckInfoDisposable.dispose();
+        }
         rv.clearOnScrollListeners();
         super.onBackPressed();
     }
 
     public void onShadowClick(View view) {
-        Snackbar.make(coordinatorLayout, "还没有到打卡时间", Snackbar.LENGTH_LONG).show();
-        startActivity(new Intent(this, FaceActivity.class));
+        allowCheckDisposable = HttpHelper.get(RoomClient.class)
+                .allowCheck()
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(booleanRestModel -> {
+                    if (booleanRestModel.getData() == null || !booleanRestModel.getData()) {
+                        Snackbar.make(coordinatorLayout, "还没有到打卡时间", Snackbar.LENGTH_LONG).show();
+                    } else {
+                        startActivityForResult(new Intent(this, FaceActivity.class), START_FACE_ACTIVITY_REQUEST_CODE);
+                    }
+                }, HttpHelper.ErrorInvoke.get(this)
+                        .orElse(t -> {
+                            Log.w(TAG, "网络请求错误", t);
+                            Snackbar.make(coordinatorLayout, "网络请求错误", Snackbar.LENGTH_LONG).show();
+                        }));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == START_FACE_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                if (data != null) {
+                    String pathName = data.getStringExtra("pathName");
+                    if (pathName != null) {
+                        File file = new File(pathName);
+                        if (file.exists() && file.canRead() && file.isFile()) {
+                            Log.d(TAG, file.getPath());
+                            uploadCheckInfo(file);
+                            return;
+                        }
+                    }
+                }
+                Snackbar.make(coordinatorLayout, "打卡失败", Snackbar.LENGTH_LONG).show();
+            } else if (resultCode == RESULT_CANCELED) {
+                Snackbar.make(coordinatorLayout, "取消打卡", Snackbar.LENGTH_LONG).show();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @SuppressWarnings("deprecation")
+    private void uploadCheckInfo(@NonNull File file) {
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("正在上传数据");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        RequestBody body = RequestBody.create(MediaType.parse("application/otcet-stream"), file);
+        MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), body);
+        uploadCheckInfoDisposable = HttpHelper.get(RoomClient.class)
+                .check(part)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(studentRoomCheckRestModel -> {
+                    studentRoomCheckList.add(0, studentRoomCheckRestModel.getData());
+                    if (rv.getAdapter() != null) {
+                        rv.getAdapter().notifyDataSetChanged();
+                    }
+                    setLastCheckTimeTextView(0);
+                    progressDialog.dismiss();
+                    Snackbar.make(coordinatorLayout, "打卡成功", Snackbar.LENGTH_LONG).show();
+                }, HttpHelper.ErrorInvoke.get(this)
+                        .before(t -> progressDialog.dismiss())
+                        .orElse(t -> {
+                            Log.w(TAG, "网络请求错误", t);
+                            Snackbar.make(coordinatorLayout, "网络请求错误", Snackbar.LENGTH_LONG).show();
+                        }));
     }
 }

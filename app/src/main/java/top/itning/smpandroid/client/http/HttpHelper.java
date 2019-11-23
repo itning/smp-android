@@ -42,9 +42,9 @@ public final class HttpHelper {
     static {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 // 设置超时时间
-                .connectTimeout(5L, TimeUnit.SECONDS)
+                .connectTimeout(15L, TimeUnit.SECONDS)
                 // 设置读写时间
-                .readTimeout(5L, TimeUnit.SECONDS)
+                .readTimeout(15L, TimeUnit.SECONDS)
                 .addInterceptor(new AuthorizationHeaderInterceptor())
                 .build();
         RETROFIT = new Retrofit.Builder()

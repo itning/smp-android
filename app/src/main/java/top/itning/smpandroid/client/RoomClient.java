@@ -1,7 +1,11 @@
 package top.itning.smpandroid.client;
 
 import io.reactivex.Observable;
+import okhttp3.MultipartBody;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
+import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 import top.itning.smpandroid.client.http.Page;
 import top.itning.smpandroid.client.http.RestModel;
@@ -20,4 +24,16 @@ public interface RoomClient {
      */
     @GET("/room/checks")
     Observable<RestModel<Page<StudentRoomCheck>>> getStudentCheckInfo(@Query("page") Integer page, @Query("size") Integer size);
+
+    /**
+     * 允许打卡
+     *
+     * @return Observable
+     */
+    @GET("/room/allow_check")
+    Observable<RestModel<Boolean>> allowCheck();
+
+    @Multipart
+    @POST("/room/check")
+    Observable<RestModel<StudentRoomCheck>> check(@Part MultipartBody.Part file);
 }
