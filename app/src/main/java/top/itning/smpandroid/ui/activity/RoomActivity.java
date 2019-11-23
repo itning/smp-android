@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,8 +27,11 @@ import com.google.android.material.snackbar.Snackbar;
 import com.loopeer.shadow.ShadowView;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,9 +40,9 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import top.itning.smpandroid.R;
 import top.itning.smpandroid.R2;
+import top.itning.smpandroid.client.RoomClient;
 import top.itning.smpandroid.client.http.HttpHelper;
 import top.itning.smpandroid.client.http.Page;
-import top.itning.smpandroid.client.RoomClient;
 import top.itning.smpandroid.entity.StudentRoomCheck;
 import top.itning.smpandroid.ui.adapter.StudentRoomCheckRecyclerViewAdapter;
 import top.itning.smpandroid.ui.interpolator.BraetheInterpolator;
@@ -51,6 +55,7 @@ import top.itning.smpandroid.util.PageUtils;
 public class RoomActivity extends AppCompatActivity {
     private static final String TAG = "RoomActivity";
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.000");
+    private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.CHINA));
     private AMapLocationClient locationClient = null;
     @BindView(R2.id.tv_address)
     AppCompatTextView addressTextView;
@@ -64,6 +69,8 @@ public class RoomActivity extends AppCompatActivity {
     ShadowView shadowView;
     @BindView(R2.id.cl_content)
     CoordinatorLayout coordinatorLayout;
+    @BindView(R2.id.tv_last_check_time)
+    TextView lastCheckTimeTextView;
     private List<StudentRoomCheck> studentRoomCheckList;
     private Disposable disposable;
     @Nullable
@@ -173,11 +180,16 @@ public class RoomActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(pageRestModel -> {
-                    studentRoomCheckPage = pageRestModel.getData();
+                    if (pageRestModel.getData().getContent() == null || pageRestModel.getData().getContent().isEmpty()) {
+                        swipeRefreshLayout.setRefreshing(false);
+                        return;
+                    }
                     if (clear) {
                         studentRoomCheckList.clear();
                     }
-                    studentRoomCheckList.addAll(studentRoomCheckPage.getContent());
+                    studentRoomCheckPage = pageRestModel.getData();
+                    setLastCheckTimeTextView(page);
+                    studentRoomCheckList.addAll(pageRestModel.getData().getContent());
                     if (rv.getAdapter() != null) {
                         rv.getAdapter().notifyDataSetChanged();
                     }
@@ -188,6 +200,13 @@ public class RoomActivity extends AppCompatActivity {
                             Log.w(TAG, "网络请求错误", t);
                             Snackbar.make(coordinatorLayout, "网络请求错误", Snackbar.LENGTH_LONG).show();
                         }));
+    }
+
+    private void setLastCheckTimeTextView(@Nullable Integer page) {
+        if (page == null || page == 0) {
+            assert studentRoomCheckPage != null;
+            lastCheckTimeTextView.setText(Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL.get()).format(studentRoomCheckPage.getContent().get(0).getCheckTime()));
+        }
     }
 
     private void initSwipeRefreshLayout() {
