@@ -3,6 +3,7 @@ package top.itning.smpandroid.ui.activity;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -49,6 +50,7 @@ import top.itning.smpandroid.client.http.HttpHelper;
 import top.itning.smpandroid.entity.Group;
 import top.itning.smpandroid.ui.adapter.StudentGroupRecyclerViewAdapter;
 import top.itning.smpandroid.util.DateUtils;
+import top.itning.smpandroid.util.Tuple2;
 
 /**
  * @author itning
@@ -82,19 +84,23 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
     }
 
     private void initView() {
-        helloTextView.setText(DateUtils.helloTime(getSharedPreferences(App.SHARED_PREFERENCES_OWN, Context.MODE_PRIVATE).getString(HttpHelper.LOGIN_USER_NAME_KEY, null)));
-        initDateView();
+        initTitleView();
         initSwipeRefreshLayout();
         initRecyclerView();
     }
 
-    private void initDateView() {
+    private void initTitleView() {
+        final SharedPreferences preferences = getSharedPreferences(App.SHARED_PREFERENCES_OWN, Context.MODE_PRIVATE);
         disposable = Observable
-                .fromCallable(() -> Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL.get()).format(new Date()))
+                .fromCallable(() -> new Tuple2<>(Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL.get()).format(new Date()),
+                        DateUtils.helloTime(preferences.getString(HttpHelper.LOGIN_USER_NAME_KEY, null))))
                 .repeatWhen(objectObservable -> objectObservable.delay(5, TimeUnit.SECONDS))
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> tv.setText(s), throwable -> Log.e(TAG, "date error", throwable));
+                .subscribe(s -> {
+                    tv.setText(s.getT1());
+                    helloTextView.setText(s.getT2());
+                }, throwable -> Log.e(TAG, "title view error", throwable));
     }
 
     private void initSwipeRefreshLayout() {
