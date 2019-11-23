@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
                     String token = restModel.getData();
                     if (token != null && !"".equals(token.trim())) {
                         SharedPreferences sharedPreferences = getSharedPreferences(App.SHARED_PREFERENCES_OWN, MODE_PRIVATE);
-                        if (sharedPreferences.edit().putString(HttpHelper.TOKEN, token).commit()) {
+                        if (sharedPreferences.edit().putString(HttpHelper.TOKEN_KEY, token).commit()) {
                             startActivity(new Intent(this, MainActivity.class));
                             finish();
                         }

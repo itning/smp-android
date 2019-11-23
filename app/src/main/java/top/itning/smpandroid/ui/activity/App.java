@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.Nullable;
 
+import top.itning.smpandroid.client.http.HttpHelper;
+
 /**
  * @author itning
  */
@@ -18,6 +20,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         smpDataSharedPreferences = getSharedPreferences(SHARED_PREFERENCES_OWN, Context.MODE_PRIVATE);
+        HttpHelper.initRetrofit();
         super.onCreate();
     }
 

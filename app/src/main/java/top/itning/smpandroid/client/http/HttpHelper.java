@@ -27,19 +27,20 @@ import top.itning.smpandroid.ui.activity.LoginActivity;
  * @author itning
  */
 public final class HttpHelper {
-    public static final String TOKEN = "token";
+    public static final String TOKEN_KEY = "token";
+    public static final String BASE_URL_KEY = "base_url";
     private static final String AUTHORIZATION = "Authorization";
     private static final String ACCEPT = "Accept";
     private static final String APPLICATION_JSON_VALUE = "application/json";
-    private static final int UNAUTHORIZED = 401;
-    /**
-     * TODO 临时 BASE URL
-     */
-    private static final String BASE_URL = "http://192.168.123.217:8888/";
+    public static final int UNAUTHORIZED = 401;
 
-    private static final Retrofit RETROFIT;
+    private static Retrofit RETROFIT;
 
-    static {
+    public static void initRetrofit() {
+        String baseUrl = "http://localhost/";
+        if (App.smpDataSharedPreferences != null) {
+            baseUrl = App.smpDataSharedPreferences.getString(BASE_URL_KEY, "http://localhost/");
+        }
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 // 设置超时时间
                 .connectTimeout(15L, TimeUnit.SECONDS)
@@ -48,7 +49,7 @@ public final class HttpHelper {
                 .addInterceptor(new AuthorizationHeaderInterceptor())
                 .build();
         RETROFIT = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(baseUrl)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(okHttpClient)
@@ -113,7 +114,7 @@ public final class HttpHelper {
         public Response intercept(@NotNull Chain chain) throws IOException {
             String token = "";
             if (App.smpDataSharedPreferences != null) {
-                token = App.smpDataSharedPreferences.getString(HttpHelper.TOKEN, "");
+                token = App.smpDataSharedPreferences.getString(HttpHelper.TOKEN_KEY, "");
             }
             Request request = chain.request();
             Request newRequest = request
