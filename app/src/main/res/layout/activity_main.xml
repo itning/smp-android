@@ -21,9 +21,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginBottom="16dp"
-            android:text="下午好，舒露"
             android:textColor="#000"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            tools:text="下午好，舒露" />
 
         <TextView
             android:id="@+id/tv_time"

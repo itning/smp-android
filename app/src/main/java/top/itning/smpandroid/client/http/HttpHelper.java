@@ -29,6 +29,7 @@ import top.itning.smpandroid.ui.activity.LoginActivity;
 public final class HttpHelper {
     public static final String TOKEN_KEY = "token";
     public static final String BASE_URL_KEY = "base_url";
+    public static final String LOGIN_USER_NAME_KEY = "loginUser_name";
     private static final String AUTHORIZATION = "Authorization";
     private static final String ACCEPT = "Accept";
     private static final String APPLICATION_JSON_VALUE = "application/json";

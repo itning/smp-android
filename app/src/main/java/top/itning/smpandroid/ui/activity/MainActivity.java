@@ -1,6 +1,7 @@
 package top.itning.smpandroid.ui.activity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -44,8 +45,10 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import top.itning.smpandroid.R;
 import top.itning.smpandroid.R2;
+import top.itning.smpandroid.client.http.HttpHelper;
 import top.itning.smpandroid.entity.Group;
 import top.itning.smpandroid.ui.adapter.StudentGroupRecyclerViewAdapter;
+import top.itning.smpandroid.util.DateUtils;
 
 /**
  * @author itning
@@ -55,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
     private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL = ThreadLocal.withInitial(() -> new SimpleDateFormat("MM月dd日 HH:mm E", Locale.CHINA));
     private static final int SETTING_REQUEST_CODE = 104;
     private static final int MUST_PERMISSIONS_REQUEST_CODE = 100;
+    @BindView(R2.id.tv_hello)
+    TextView helloTextView;
     @BindView(R2.id.tv_time)
     TextView tv;
     @BindView(R2.id.srl)
@@ -77,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
     }
 
     private void initView() {
+        helloTextView.setText(DateUtils.helloTime(getSharedPreferences(App.SHARED_PREFERENCES_OWN, Context.MODE_PRIVATE).getString(HttpHelper.LOGIN_USER_NAME_KEY, null)));
         initDateView();
         initSwipeRefreshLayout();
         initRecyclerView();

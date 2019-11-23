@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -16,10 +17,16 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,6 +37,8 @@ import top.itning.smpandroid.R;
 import top.itning.smpandroid.R2;
 import top.itning.smpandroid.client.LoginClient;
 import top.itning.smpandroid.client.http.HttpHelper;
+import top.itning.smpandroid.entity.LoginUser;
+import top.itning.smpandroid.entity.Wrap;
 import top.itning.smpandroid.ui.view.CustomVideoView;
 
 /**
@@ -169,22 +178,39 @@ public class LoginActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(restModel -> {
-                    progressDialog.dismiss();
                     String token = restModel.getData();
                     if (token != null && !"".equals(token.trim())) {
                         SharedPreferences sharedPreferences = getSharedPreferences(App.SHARED_PREFERENCES_OWN, MODE_PRIVATE);
                         if (sharedPreferences.edit().putString(HttpHelper.TOKEN_KEY, token).commit()) {
+                            setUserInfo(sharedPreferences);
+                            progressDialog.dismiss();
                             startActivity(new Intent(this, MainActivity.class));
                             finish();
                             return;
                         }
                     }
+                    progressDialog.dismiss();
                     Toast.makeText(this, "登陆失败", Toast.LENGTH_LONG).show();
                 }, throwable -> {
                     Log.w(TAG, "登陆失败", throwable);
                     progressDialog.dismiss();
                     Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_LONG).show();
                 });
+    }
+
+    private void setUserInfo(@NonNull SharedPreferences preferences) {
+        try {
+            String json = new String(Base64.decode(preferences.getString(HttpHelper.TOKEN_KEY, "").split("\\.")[1], Base64.URL_SAFE));
+            Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json1, type, context) -> new Date(json1.getAsLong())).create();
+            Wrap wrap = gson.fromJson(json, Wrap.class);
+            LoginUser loginUser = gson.fromJson(wrap.getLoginUser(), LoginUser.class);
+            if (preferences.edit().putString(HttpHelper.LOGIN_USER_NAME_KEY, loginUser.getName()).commit()) {
+                Log.i(TAG, loginUser.toString());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "", e);
+            Toast.makeText(this, "保存用户信息失败", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
