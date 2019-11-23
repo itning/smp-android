@@ -86,6 +86,10 @@ public class RoomActivity extends AppCompatActivity {
     private Disposable allowCheckDisposable;
     @Nullable
     private Disposable uploadCheckInfoDisposable;
+    private double longitude = 0;
+    private double latitude = 0;
+    private ObjectAnimator alphaAnimator1;
+    private ObjectAnimator alphaAnimator2;
 
 
     @Override
@@ -109,6 +113,8 @@ public class RoomActivity extends AppCompatActivity {
             if (aMapLocation != null) {
                 if (aMapLocation.getErrorCode() == 0) {
                     //可在其中解析amapLocation获取相应内容。
+                    longitude = aMapLocation.getLongitude();
+                    latitude = aMapLocation.getLatitude();
                     if (addressTextView != null) {
                         if (!"".equals(aMapLocation.getDescription())) {
                             addressTextView.setText(aMapLocation.getDescription());
@@ -234,13 +240,13 @@ public class RoomActivity extends AppCompatActivity {
         int c2 = ContextCompat.getColor(this, R.color.class_color_2);
         int c6 = ContextCompat.getColor(this, R.color.class_color_6);
         int c7 = ContextCompat.getColor(this, R.color.class_color_7);
-        ObjectAnimator alphaAnimator1 = ObjectAnimator.ofArgb(shadowView, "backgroundClr", c1, c2, c6, c7);
+        alphaAnimator1 = ObjectAnimator.ofArgb(shadowView, "backgroundClr", c1, c2, c6, c7);
         alphaAnimator1.setDuration(10000);
         //使用自定义的插值器
         alphaAnimator1.setInterpolator(BraetheInterpolator.getSingleInstance());
         alphaAnimator1.setRepeatCount(ValueAnimator.INFINITE);
 
-        ObjectAnimator alphaAnimator2 = ObjectAnimator.ofArgb(shadowView, "shadowColor", c1, c2, c6, c7);
+        alphaAnimator2 = ObjectAnimator.ofArgb(shadowView, "shadowColor", c1, c2, c6, c7);
         alphaAnimator2.setDuration(10000);
         //使用自定义的插值器
         alphaAnimator2.setInterpolator(BraetheInterpolator.getSingleInstance());
@@ -260,6 +266,30 @@ public class RoomActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        if (alphaAnimator1 != null) {
+            alphaAnimator1.pause();
+
+        }
+        if (alphaAnimator2 != null) {
+            alphaAnimator2.pause();
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        if (alphaAnimator1 != null) {
+            alphaAnimator1.resume();
+
+        }
+        if (alphaAnimator2 != null) {
+            alphaAnimator2.resume();
+        }
+        super.onResume();
+    }
+
+    @Override
     public void onBackPressed() {
         locationClient.stopLocation();
         locationClient.onDestroy();
@@ -271,6 +301,16 @@ public class RoomActivity extends AppCompatActivity {
         }
         if (uploadCheckInfoDisposable != null && !uploadCheckInfoDisposable.isDisposed()) {
             uploadCheckInfoDisposable.dispose();
+        }
+        if (alphaAnimator1 != null) {
+            alphaAnimator1.removeAllListeners();
+            alphaAnimator1.end();
+            alphaAnimator1.cancel();
+        }
+        if (alphaAnimator2 != null) {
+            alphaAnimator2.removeAllListeners();
+            alphaAnimator2.end();
+            alphaAnimator2.cancel();
         }
         rv.clearOnScrollListeners();
         super.onBackPressed();
@@ -327,7 +367,7 @@ public class RoomActivity extends AppCompatActivity {
         RequestBody body = RequestBody.create(MediaType.parse("application/otcet-stream"), file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), body);
         uploadCheckInfoDisposable = HttpHelper.get(RoomClient.class)
-                .check(part)
+                .check(part, longitude, latitude)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(studentRoomCheckRestModel -> {

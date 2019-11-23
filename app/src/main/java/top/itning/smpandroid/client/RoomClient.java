@@ -33,7 +33,15 @@ public interface RoomClient {
     @GET("/room/allow_check")
     Observable<RestModel<Boolean>> allowCheck();
 
+    /**
+     * 寝室打卡
+     *
+     * @param file      图像
+     * @param longitude 经度
+     * @param latitude  纬度
+     * @return Observable
+     */
     @Multipart
     @POST("/room/check")
-    Observable<RestModel<StudentRoomCheck>> check(@Part MultipartBody.Part file);
+    Observable<RestModel<StudentRoomCheck>> check(@Part MultipartBody.Part file, @Part("longitude") double longitude, @Part("latitude") double latitude);
 }

@@ -25,6 +25,14 @@ public class StudentRoomCheck implements Serializable {
      */
     private Date checkTime;
     /**
+     * 经度
+     */
+    private double longitude;
+    /**
+     * 纬度
+     */
+    private double latitude;
+    /**
      * 创建时间
      */
     private Date gmtCreate;
