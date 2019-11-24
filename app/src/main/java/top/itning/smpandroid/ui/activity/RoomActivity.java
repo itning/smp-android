@@ -205,7 +205,7 @@ public class RoomActivity extends AppCompatActivity {
                         studentRoomCheckList.clear();
                     }
                     studentRoomCheckPage = pageRestModel.getData();
-                    setLastCheckTimeTextView(page);
+                    setLastCheckTimeTextView(page, pageRestModel.getData().getContent().get(0));
                     studentRoomCheckList.addAll(pageRestModel.getData().getContent());
                     if (rv.getAdapter() != null) {
                         rv.getAdapter().notifyDataSetChanged();
@@ -213,16 +213,15 @@ public class RoomActivity extends AppCompatActivity {
                     swipeRefreshLayout.setRefreshing(false);
                 }, HttpHelper.ErrorInvoke.get(this)
                         .before(t -> swipeRefreshLayout.setRefreshing(false))
-                        .orElse(t -> {
+                        .orElseException(t -> {
                             Log.w(TAG, "网络请求错误", t);
                             Snackbar.make(coordinatorLayout, "网络请求错误", Snackbar.LENGTH_LONG).show();
                         }));
     }
 
-    private void setLastCheckTimeTextView(@Nullable Integer page) {
+    private void setLastCheckTimeTextView(@Nullable Integer page, StudentRoomCheck studentRoomCheck) {
         if (page == null || page == 0) {
-            assert studentRoomCheckPage != null;
-            lastCheckTimeTextView.setText(Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL.get()).format(studentRoomCheckPage.getContent().get(0).getCheckTime()));
+            lastCheckTimeTextView.setText(Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL.get()).format(studentRoomCheck.getCheckTime()));
         }
     }
 
@@ -328,7 +327,7 @@ public class RoomActivity extends AppCompatActivity {
                         startActivityForResult(new Intent(this, FaceActivity.class), START_FACE_ACTIVITY_REQUEST_CODE);
                     }
                 }, HttpHelper.ErrorInvoke.get(this)
-                        .orElse(t -> {
+                        .orElseException(t -> {
                             Log.w(TAG, "网络请求错误", t);
                             Snackbar.make(coordinatorLayout, "网络请求错误", Snackbar.LENGTH_LONG).show();
                         }));
@@ -375,12 +374,16 @@ public class RoomActivity extends AppCompatActivity {
                     if (rv.getAdapter() != null) {
                         rv.getAdapter().notifyDataSetChanged();
                     }
-                    setLastCheckTimeTextView(0);
+                    setLastCheckTimeTextView(0, studentRoomCheckRestModel.getData());
                     progressDialog.dismiss();
                     Snackbar.make(coordinatorLayout, "打卡成功", Snackbar.LENGTH_LONG).show();
                 }, HttpHelper.ErrorInvoke.get(this)
                         .before(t -> progressDialog.dismiss())
-                        .orElse(t -> {
+                        .orElseCode(t -> {
+                            String msg = t.getT2() != null ? t.getT2().getMsg() : t.getT1().code() + "";
+                            Snackbar.make(coordinatorLayout, msg, Snackbar.LENGTH_LONG).show();
+                        })
+                        .orElseException(t -> {
                             Log.w(TAG, "网络请求错误", t);
                             Snackbar.make(coordinatorLayout, "网络请求错误", Snackbar.LENGTH_LONG).show();
                         }));

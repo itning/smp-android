@@ -13,9 +13,13 @@
         android:layout_height="wrap_content"
         toolbar:title="个人中心" />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatButton
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="施工中" />
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorAccent"
+        android:onClick="handleLogoutBtnClick"
+        android:text="注销登录"
+        android:textAppearance="?android:attr/textAppearanceLargeInverse"
+        android:textSize="16sp"
+        android:theme="@style/AppTheme" />
 </androidx.appcompat.widget.LinearLayoutCompat>

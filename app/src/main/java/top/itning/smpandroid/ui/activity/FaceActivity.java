@@ -202,8 +202,8 @@ public class FaceActivity extends AppCompatActivity {
 
                                 boolean saved = false;
                                 String pathName = activity.getExternalCacheDir() + "/" + System.currentTimeMillis() + ".jpg";
-                                for (int i = 0; i < rectVector.size(); i++) {
-                                    org.bytedeco.opencv.opencv_core.Rect rect = rectVector.get(i);
+                                if (rectVector.size() == 1) {
+                                    org.bytedeco.opencv.opencv_core.Rect rect = rectVector.get(0);
                                     int x = rect.x();
                                     int y = rect.y();
                                     opencv_imgproc.rectangle(mat, new Point(x, y), new Point(x + rect.width(), y + rect.height()), SCALAR);
