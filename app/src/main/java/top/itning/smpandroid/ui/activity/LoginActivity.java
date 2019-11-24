@@ -191,11 +191,16 @@ public class LoginActivity extends AppCompatActivity {
                     }
                     progressDialog.dismiss();
                     Toast.makeText(this, "登陆失败", Toast.LENGTH_LONG).show();
-                }, throwable -> {
-                    Log.w(TAG, "登陆失败", throwable);
-                    progressDialog.dismiss();
-                    Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_LONG).show();
-                });
+                }, HttpHelper.ErrorInvoke
+                        .get(this)
+                        .before(t -> progressDialog.dismiss())
+                        .orElseCode(t -> {
+                            Toast.makeText(this, t.getT2().getMsg(), Toast.LENGTH_LONG).show();
+                        })
+                        .orElseException(t -> {
+                            Log.w(TAG, "login exception", t);
+                            Toast.makeText(this, t.getMessage(), Toast.LENGTH_LONG).show();
+                        }));
     }
 
     private void setUserInfo(@NonNull SharedPreferences preferences) {
