@@ -154,6 +154,10 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
                 startActivity(new Intent(this, PersonalActivity.class));
                 break;
             }
+            case R.id.btn_leave: {
+                startActivity(new Intent(this, LeaveActivity.class));
+                break;
+            }
             default:
         }
     }

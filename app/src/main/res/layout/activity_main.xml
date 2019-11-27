@@ -34,9 +34,11 @@
             tools:text="11月19日 11:14 星期二" />
 
         <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/btn_personal"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentEnd="true"
+            android:onClick="onShadowClick"
             android:src="@drawable/timg" />
     </RelativeLayout>
 
@@ -71,7 +73,7 @@
         </com.loopeer.shadow.ShadowView>
 
         <com.loopeer.shadow.ShadowView
-            android:id="@+id/btn_personal"
+            android:id="@+id/btn_leave"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="0dp"
@@ -91,7 +93,7 @@
                 android:layout_height="48dp"
                 android:layout_marginEnd="44dp"
                 android:gravity="center"
-                android:text="个人中心"
+                android:text="我的请假"
                 android:textColor="#fff" />
         </com.loopeer.shadow.ShadowView>
     </androidx.appcompat.widget.LinearLayoutCompat>
