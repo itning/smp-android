@@ -1,15 +1,18 @@
 package top.itning.smpandroid.ui.activity;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,9 +31,15 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,6 +53,7 @@ import top.itning.smpandroid.client.http.HttpHelper;
 import top.itning.smpandroid.client.http.Page;
 import top.itning.smpandroid.entity.Leave;
 import top.itning.smpandroid.entity.LeaveReason;
+import top.itning.smpandroid.entity.LeaveType;
 import top.itning.smpandroid.ui.adapter.StudentLeaveReasonRecyclerViewAdapter;
 import top.itning.smpandroid.ui.adapter.StudentLeaveRecyclerViewAdapter;
 import top.itning.smpandroid.ui.listener.AbstractLoadMoreListener;
@@ -51,9 +62,9 @@ import top.itning.smpandroid.util.PageUtils;
 /**
  * @author itning
  */
-public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecyclerViewAdapter.OnItemClickListener<Leave> {
+public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecyclerViewAdapter.OnItemClickListener<Leave>, View.OnClickListener, DatePickerDialog.OnDateSetListener, AdapterView.OnItemSelectedListener, TextView.OnEditorActionListener {
     private static final String TAG = "LeaveActivity";
-
+    private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA));
     @BindView(R2.id.tb)
     MaterialToolbar toolbar;
     @BindView(R2.id.srl)
@@ -68,6 +79,15 @@ public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecy
     @Nullable
     private Disposable disposable;
     private Disposable newReasonDisposable;
+    @Nullable
+    private Leave leave;
+    @Nullable
+    private TextView startTextView;
+    @Nullable
+    private TextView endTextView;
+    private TextInputLayout newLeaveReasonViewTextInputLayout;
+    private Disposable newLeaveDisposable;
+    private BottomSheetDialog newLeaveDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,12 +97,18 @@ public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecy
         initView();
     }
 
+    /**
+     * 初始化视图
+     */
     private void initView() {
         initToolBar();
         initSwipeRefreshLayout();
         initRecyclerView();
     }
 
+    /**
+     * 初始化RecyclerView
+     */
     private void initRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         rv.setLayoutManager(layoutManager);
@@ -92,13 +118,20 @@ public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecy
         rv.addOnScrollListener(new AbstractLoadMoreListener() {
             @Override
             protected void onLoading(int countItem, int lastItem) {
-                PageUtils.getNextPageAndSize(leavePage, t -> initRecyleViewData(false, t.getT1(), t.getT2()));
+                PageUtils.getNextPageAndSize(leavePage, t -> initRecycleViewData(false, t.getT1(), t.getT2()));
             }
         });
-        initRecyleViewData(true, PageUtils.DEFAULT_PAGE, PageUtils.DEFAULT_SIZE);
+        initRecycleViewData(true, PageUtils.DEFAULT_PAGE, PageUtils.DEFAULT_SIZE);
     }
 
-    private void initRecyleViewData(boolean clear, @Nullable Integer page, @Nullable Integer size) {
+    /**
+     * 初始化数据
+     *
+     * @param clear 清空原有？
+     * @param page  页
+     * @param size  数量
+     */
+    private void initRecycleViewData(boolean clear, @Nullable Integer page, @Nullable Integer size) {
         swipeRefreshLayout.setRefreshing(true);
         disposable = HttpHelper
                 .get(LeaveClient.class)
@@ -127,15 +160,21 @@ public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecy
                         }));
     }
 
+    /**
+     * 初始化下拉刷新
+     */
     private void initSwipeRefreshLayout() {
         swipeRefreshLayout.setColorSchemeResources(
                 R.color.colorPrimary, R.color.colorAccent, R.color.class_color_1,
                 R.color.class_color_2, R.color.class_color_3, R.color.class_color_4,
                 R.color.class_color_5, R.color.class_color_6, R.color.class_color_7
         );
-        swipeRefreshLayout.setOnRefreshListener(() -> initRecyleViewData(true, PageUtils.DEFAULT_PAGE, PageUtils.DEFAULT_SIZE));
+        swipeRefreshLayout.setOnRefreshListener(() -> initRecycleViewData(true, PageUtils.DEFAULT_PAGE, PageUtils.DEFAULT_SIZE));
     }
 
+    /**
+     * 初始化工具栏
+     */
     private void initToolBar() {
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -153,6 +192,9 @@ public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecy
         if (newReasonDisposable != null && !newReasonDisposable.isDisposed()) {
             newReasonDisposable.dispose();
         }
+        if (newLeaveDisposable != null && !newLeaveDisposable.isDisposed()) {
+            newLeaveDisposable.dispose();
+        }
         rv.clearOnScrollListeners();
         super.onBackPressed();
     }
@@ -166,14 +208,59 @@ public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecy
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * 新增请假信息
+     *
+     * @param view View
+     */
     public void onFabClick(View view) {
-        Log.d(TAG, "新增请假");
+        leave = new Leave();
+        newLeaveDialog = new BottomSheetDialog(this);
+        @SuppressLint("InflateParams") View newLeaveReasonView = getLayoutInflater().inflate(R.layout.alert_leave_new, null);
+        AppCompatSpinner leaveTypeSpinner = newLeaveReasonView.findViewById(R.id.spinner_type);
+        startTextView = newLeaveReasonView.findViewById(R.id.tv_start_time);
+        endTextView = newLeaveReasonView.findViewById(R.id.tv_end_time);
+        newLeaveReasonViewTextInputLayout = newLeaveReasonView.findViewById(R.id.ti_layout);
+        String nowDateStr = Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL.get()).format(new Date());
+        assert startTextView != null;
+        assert endTextView != null;
+        startTextView.setText(nowDateStr);
+        endTextView.setText(nowDateStr);
+
+        startTextView.setOnClickListener(this);
+        endTextView.setOnClickListener(this);
+
+        leaveTypeSpinner.setOnItemSelectedListener(this);
+
+        EditText editText = newLeaveReasonViewTextInputLayout.getEditText();
+        if (editText != null) {
+            editText.setSingleLine();
+            editText.setOnEditorActionListener(this);
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    newLeaveReasonViewTextInputLayout.setError(null);
+                }
+            });
+        }
+        newLeaveDialog.setContentView(newLeaveReasonView);
+        newLeaveDialog.show();
     }
 
     @Override
     public void onItemClick(View view, Leave leave) {
         BottomSheetDialog dialog = new BottomSheetDialog(this);
-        View leaveReasonView = getLayoutInflater().inflate(R.layout.alert_leave_reason, null);
+        @SuppressLint("InflateParams") View leaveReasonView = getLayoutInflater().inflate(R.layout.alert_leave_reason, null);
         RecyclerView recyclerView = leaveReasonView.findViewById(R.id.recycler_view);
         TextInputLayout textInputLayout = leaveReasonView.findViewById(R.id.ti_layout);
         TextView reasonTextView = leaveReasonView.findViewById(R.id.tv_reason);
@@ -184,6 +271,13 @@ public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecy
         dialog.show();
     }
 
+    /**
+     * 初始化请假评论
+     *
+     * @param recyclerView    RecyclerView
+     * @param textInputLayout TextInputLayout
+     * @param leave           请假信息
+     */
     private void initReason(RecyclerView recyclerView, TextInputLayout textInputLayout, Leave leave) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -225,6 +319,14 @@ public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecy
         }
     }
 
+    /**
+     * 处理新增评论
+     *
+     * @param adapter         适配器
+     * @param textInputLayout TextInputLayout
+     * @param editText        EditText
+     * @param leave           评论所在请假信息
+     */
     @SuppressWarnings("deprecation")
     private void handleNewReasonBtn(@Nullable RecyclerView.Adapter adapter, TextInputLayout textInputLayout, EditText editText, Leave leave) {
         if (editText.getText().length() == 0 || "".contentEquals(editText.getText())) {
@@ -258,5 +360,167 @@ public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecy
                             Log.w(TAG, "网络请求错误", t);
                             Toast.makeText(this, "网络请求错误", Toast.LENGTH_LONG).show();
                         }));
+    }
+
+    @Override
+    public void onClick(View v) {
+        DatePickerDialog datePickerDialog = DatePickerDialog.newInstance(this, Calendar.getInstance());
+        switch (v.getId()) {
+            case R.id.tv_start_time: {
+                datePickerDialog.setMinDate(Calendar.getInstance());
+                if (leave != null && leave.getEndTime() != null) {
+                    Calendar maxCal = Calendar.getInstance();
+                    maxCal.setTime(leave.getEndTime());
+                    datePickerDialog.setMaxDate(maxCal);
+                }
+                datePickerDialog.show(getSupportFragmentManager(), "startDatePickerDialog");
+                break;
+            }
+            case R.id.tv_end_time: {
+                if (leave != null && leave.getStartTime() != null) {
+                    Calendar minCal = Calendar.getInstance();
+                    minCal.setTime(leave.getStartTime());
+                    datePickerDialog.setMinDate(minCal);
+                } else {
+                    datePickerDialog.setMinDate(Calendar.getInstance());
+                }
+                datePickerDialog.show(getSupportFragmentManager(), "endDatePickerDialog");
+                break;
+            }
+            default:
+        }
+    }
+
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+        if (view.getTag() == null || leave == null) {
+            return;
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, monthOfYear);
+        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        String nowDateStr = year + "-" + (monthOfYear + 1) + "-" + dayOfMonth;
+        switch (view.getTag()) {
+            case "startDatePickerDialog": {
+                leave.setStartTime(calendar.getTime());
+                if (startTextView != null) {
+                    startTextView.setText(nowDateStr);
+                }
+                break;
+            }
+            case "endDatePickerDialog": {
+                leave.setEndTime(calendar.getTime());
+                if (endTextView != null) {
+                    endTextView.setText(nowDateStr);
+                }
+                break;
+            }
+            default:
+        }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        switch (position) {
+            case 0: {
+                if (leave != null) {
+                    leave.setLeaveType(LeaveType.CLASS_LEAVE);
+                }
+                break;
+            }
+            case 1: {
+                if (leave != null) {
+                    leave.setLeaveType(LeaveType.ROOM_LEAVE);
+                }
+                break;
+            }
+            case 2: {
+                if (leave != null) {
+                    leave.setLeaveType(LeaveType.ALL_LEAVE);
+                }
+                break;
+            }
+            default:
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if (actionId == EditorInfo.IME_ACTION_SEND) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (inputMethodManager != null) {
+                inputMethodManager.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+            }
+            if (leave == null) {
+                Toast.makeText(this, "请重新输入", Toast.LENGTH_LONG).show();
+                return false;
+            }
+            Calendar calendar = Calendar.getInstance();
+            if (leave.getStartTime() == null) {
+                leave.setStartTime(calendar.getTime());
+            }
+            if (leave.getEndTime() == null) {
+                calendar.setTime(leave.getStartTime());
+                leave.setEndTime(calendar.getTime());
+            }
+            EditText editText = newLeaveReasonViewTextInputLayout.getEditText();
+            if (editText != null) {
+                if (editText.getText().length() == 0 || "".contentEquals(editText.getText())) {
+                    newLeaveReasonViewTextInputLayout.setError("请输入请假原因");
+                    return false;
+                }
+                handleNewLeave(leave, newLeaveReasonViewTextInputLayout, editText);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 处理新增请假信息
+     *
+     * @param leave           请假信息
+     * @param textInputLayout TextInputLayout
+     * @param editText        EditText
+     */
+    @SuppressWarnings("deprecation")
+    private void handleNewLeave(@NonNull Leave leave, @NonNull TextInputLayout textInputLayout, @NonNull EditText editText) {
+        final SimpleDateFormat simpleDateFormat = SIMPLE_DATE_FORMAT_THREAD_LOCAL.get();
+        assert simpleDateFormat != null;
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("正在发送");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        newLeaveDisposable = HttpHelper.get(LeaveClient.class)
+                .newLeave(simpleDateFormat.format(leave.getStartTime()), simpleDateFormat.format(leave.getEndTime()), editText.getText().toString(), leave.getLeaveType().name())
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(restModel -> {
+                    progressDialog.dismiss();
+                    textInputLayout.clearFocus();
+                    editText.clearFocus();
+                    editText.setText("");
+                    leaveList.add(0, restModel.getData());
+                    if (newLeaveDialog != null) {
+                        newLeaveDialog.dismiss();
+                    }
+                    if (rv.getAdapter() != null) {
+                        rv.getAdapter().notifyDataSetChanged();
+                    }
+                }, HttpHelper.ErrorInvoke.get(this)
+                        .before(t -> progressDialog.dismiss())
+                        .orElseCode(t -> Toast.makeText(this, t.getT2().getMsg(), Toast.LENGTH_LONG).show())
+                        .orElseException(t -> {
+                            Log.w(TAG, "网络请求错误", t);
+                            Toast.makeText(this, "网络请求错误", Toast.LENGTH_LONG).show();
+                        }));
+
     }
 }

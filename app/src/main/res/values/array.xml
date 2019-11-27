@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="leave_type">
+        <item>课假</item>
+        <item>寝室假</item>
+        <item>课假+寝室假</item>
+    </string-array>
+</resources>

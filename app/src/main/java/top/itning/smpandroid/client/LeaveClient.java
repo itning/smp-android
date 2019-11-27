@@ -35,4 +35,21 @@ public interface LeaveClient {
     @FormUrlEncoded
     @POST("/leave/leave/comment")
     Observable<RestModel<LeaveReason>> newComment(@Field("leaveId") String leaveId, @Field("comment") String comment);
+
+
+    /**
+     * 新增请假信息
+     *
+     * @param startTime 请假开始时间
+     * @param endTime   请假结束时间
+     * @param reason    原因
+     * @param leaveType 请假类型
+     * @return 新增的请假信息
+     */
+    @FormUrlEncoded
+    @POST("/leave/leave")
+    Observable<RestModel<Leave>> newLeave(@Field("startTime") String startTime,
+                                          @Field("endTime") String endTime,
+                                          @Field("reason") String reason,
+                                          @Field("leaveType") String leaveType);
 }
