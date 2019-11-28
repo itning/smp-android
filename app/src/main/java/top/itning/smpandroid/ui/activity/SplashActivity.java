@@ -98,15 +98,20 @@ public class SplashActivity extends AppCompatActivity {
 
                         @Override
                         public void onError(Throwable e) {
-                            Log.d(TAG, "catch exception", e);
-                            Log.d(TAG, e.getClass().getName());
                             if (e instanceof HttpException) {
                                 HttpException httpException = (HttpException) e;
                                 if (httpException.code() == HttpHelper.UNAUTHORIZED) {
+                                    RestModel<String> restModel = HttpHelper.getRestModelFromHttpException(httpException);
+                                    if (restModel != null) {
+                                        Toast.makeText(SplashActivity.this, restModel.getMsg(), Toast.LENGTH_LONG).show();
+                                    }
                                     startActivity(new Intent(SplashActivity.this, LoginActivity.class));
                                     finish();
                                     return;
                                 }
+                            } else {
+                                Log.d(TAG, e.getClass().getName());
+                                Log.d(TAG, "catch exception", e);
                             }
                             showAndToastAlertDialog(e, sharedPreferences);
                         }

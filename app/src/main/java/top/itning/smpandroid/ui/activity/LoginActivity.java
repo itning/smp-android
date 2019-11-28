@@ -147,6 +147,11 @@ public class LoginActivity extends AppCompatActivity {
         super.onStop();
     }
 
+    /**
+     * 处理登录按钮点击事件
+     *
+     * @param view View
+     */
     public void handleLoginBtn(View view) {
         String username = "", password = "";
         EditText usernameLayoutEditText = usernameLayout.getEditText();
@@ -203,6 +208,11 @@ public class LoginActivity extends AppCompatActivity {
                         }));
     }
 
+    /**
+     * 登陆成功后设置用户信息
+     *
+     * @param preferences SharedPreferences
+     */
     private void setUserInfo(@NonNull SharedPreferences preferences) {
         try {
             String json = new String(Base64.decode(preferences.getString(HttpHelper.TOKEN_KEY, "").split("\\.")[1], Base64.URL_SAFE));

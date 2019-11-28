@@ -78,15 +78,19 @@ public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecy
     private Page<Leave> leavePage;
     @Nullable
     private Disposable disposable;
+    @Nullable
     private Disposable newReasonDisposable;
+    @Nullable
+    private Disposable newLeaveDisposable;
     @Nullable
     private Leave leave;
     @Nullable
     private TextView startTextView;
     @Nullable
     private TextView endTextView;
+    @Nullable
     private TextInputLayout newLeaveReasonViewTextInputLayout;
-    private Disposable newLeaveDisposable;
+    @Nullable
     private BottomSheetDialog newLeaveDialog;
 
     @Override
@@ -224,6 +228,7 @@ public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecy
         String nowDateStr = Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL.get()).format(new Date());
         assert startTextView != null;
         assert endTextView != null;
+        assert newLeaveReasonViewTextInputLayout != null;
         startTextView.setText(nowDateStr);
         endTextView.setText(nowDateStr);
 
@@ -457,7 +462,7 @@ public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecy
             if (inputMethodManager != null) {
                 inputMethodManager.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
             }
-            if (leave == null) {
+            if (leave == null || newLeaveReasonViewTextInputLayout == null) {
                 Toast.makeText(this, "请重新输入", Toast.LENGTH_LONG).show();
                 return false;
             }

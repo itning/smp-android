@@ -69,9 +69,34 @@ public final class HttpHelper {
         return RETROFIT.create(service);
     }
 
+    /**
+     * 从HttpException解析服务器数据
+     *
+     * @param httpException HttpException
+     * @return 解析服务器数据可能为<code>null</code>
+     */
+    @Nullable
+    @SuppressWarnings("ConstantConditions")
+    public static RestModel<String> getRestModelFromHttpException(@NonNull HttpException httpException) {
+        try {
+            Type type = TypeBuilder
+                    .newInstance(RestModel.class)
+                    .addTypeParam(String.class)
+                    .build();
+            return new Gson().fromJson(httpException.response().errorBody().string(), type);
+        } catch (Exception e) {
+            Log.w("HttpHelper", "parse error response exception", e);
+            return null;
+        }
+    }
+
     public static class ErrorInvoke implements Consumer<Throwable> {
-
-
+        /**
+         * 获取错误处理实例
+         *
+         * @param activity Activity
+         * @return ErrorInvoke
+         */
         public static ErrorInvoke get(@NonNull Activity activity) {
             return new ErrorInvoke(activity);
         }
@@ -88,7 +113,6 @@ public final class HttpHelper {
             this.activity = activity;
         }
 
-        @SuppressWarnings("ConstantConditions")
         @Override
         public void accept(Throwable throwable) {
             if (andConsumer != null) {
@@ -96,21 +120,15 @@ public final class HttpHelper {
             }
             if (throwable instanceof HttpException) {
                 HttpException httpException = (HttpException) throwable;
+                RestModel<String> restModel = getRestModelFromHttpException(httpException);
                 if (httpException.code() == UNAUTHORIZED) {
+                    if (restModel != null) {
+                        Toast.makeText(activity, restModel.getMsg(), Toast.LENGTH_LONG).show();
+                    }
                     Intent intent = new Intent(activity, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     activity.startActivity(intent);
                 } else {
-                    RestModel<String> restModel = null;
-                    try {
-                        Type type = TypeBuilder
-                                .newInstance(RestModel.class)
-                                .addTypeParam(String.class)
-                                .build();
-                        restModel = new Gson().fromJson(httpException.response().errorBody().string(), type);
-                    } catch (Exception e) {
-                        Log.w("HttpHelper", "parse error response exception", e);
-                    }
                     if (elseCodeConsumer != null) {
                         elseCodeConsumer.accept(new Tuple2<>(httpException, restModel));
                     } else {
