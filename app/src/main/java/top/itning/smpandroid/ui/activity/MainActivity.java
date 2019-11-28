@@ -109,12 +109,10 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
                 R.color.class_color_2, R.color.class_color_3, R.color.class_color_4,
                 R.color.class_color_5, R.color.class_color_6, R.color.class_color_7
         );
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            new Handler().postDelayed(() -> {
-                swipeRefreshLayout.setRefreshing(false);
-                Snackbar.make(coordinatorLayout, "已刷新", Snackbar.LENGTH_LONG).show();
-            }, 4000);
-        });
+        swipeRefreshLayout.setOnRefreshListener(() -> new Handler().postDelayed(() -> {
+            swipeRefreshLayout.setRefreshing(false);
+            Snackbar.make(coordinatorLayout, "已刷新", Snackbar.LENGTH_LONG).show();
+        }, 4000));
     }
 
     private void initRecyclerView() {

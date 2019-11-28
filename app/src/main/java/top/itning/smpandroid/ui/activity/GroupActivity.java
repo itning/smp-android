@@ -77,10 +77,6 @@ public class GroupActivity extends AppCompatActivity {
 
     private void initLocation() {
         AMapLocationClient.setApiKey("d4be613647d43ff91487e2ef7d11ce79");
-        // DPoint startLatlng, DPoint endLatlng
-        // lat lon  return 米
-        // CoordinateConverter.calculateLineDistance(new DPoint(45.742225620811254, 127.21238958865777), new DPoint());
-        //初始化定位
         locationClient = new AMapLocationClient(getApplicationContext());
         //设置定位回调监听
         locationClient.setLocationListener(aMapLocation -> {
@@ -186,12 +182,10 @@ public class GroupActivity extends AppCompatActivity {
                 R.color.class_color_2, R.color.class_color_3, R.color.class_color_4,
                 R.color.class_color_5, R.color.class_color_6, R.color.class_color_7
         );
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            new Handler().postDelayed(() -> {
-                swipeRefreshLayout.setRefreshing(false);
-                Snackbar.make(coordinatorLayout, "已刷新", Snackbar.LENGTH_LONG).show();
-            }, 4000);
-        });
+        swipeRefreshLayout.setOnRefreshListener(() -> new Handler().postDelayed(() -> {
+            swipeRefreshLayout.setRefreshing(false);
+            Snackbar.make(coordinatorLayout, "已刷新", Snackbar.LENGTH_LONG).show();
+        }, 4000));
     }
 
     private void initShadowViewAnimator() {

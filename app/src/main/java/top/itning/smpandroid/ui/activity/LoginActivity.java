@@ -199,9 +199,7 @@ public class LoginActivity extends AppCompatActivity {
                 }, HttpHelper.ErrorInvoke
                         .get(this)
                         .before(t -> progressDialog.dismiss())
-                        .orElseCode(t -> {
-                            Toast.makeText(this, t.getT2().getMsg(), Toast.LENGTH_LONG).show();
-                        })
+                        .orElseCode(t -> Toast.makeText(this, t.getT2().getMsg(), Toast.LENGTH_LONG).show())
                         .orElseException(t -> {
                             Log.w(TAG, "login exception", t);
                             Toast.makeText(this, t.getMessage(), Toast.LENGTH_LONG).show();

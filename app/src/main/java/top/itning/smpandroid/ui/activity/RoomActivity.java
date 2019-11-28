@@ -103,10 +103,6 @@ public class RoomActivity extends AppCompatActivity {
 
     private void initLocation() {
         AMapLocationClient.setApiKey("d4be613647d43ff91487e2ef7d11ce79");
-        // DPoint startLatlng, DPoint endLatlng
-        // lat lon  return 米
-        // CoordinateConverter.calculateLineDistance(new DPoint(45.742225620811254, 127.21238958865777), new DPoint());
-        // 初始化定位
         locationClient = new AMapLocationClient(getApplicationContext());
         // 设置定位回调监听
         locationClient.setLocationListener(aMapLocation -> {
