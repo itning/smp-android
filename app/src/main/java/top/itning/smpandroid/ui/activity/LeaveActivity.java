@@ -33,13 +33,10 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,14 +54,17 @@ import top.itning.smpandroid.entity.LeaveType;
 import top.itning.smpandroid.ui.adapter.StudentLeaveReasonRecyclerViewAdapter;
 import top.itning.smpandroid.ui.adapter.StudentLeaveRecyclerViewAdapter;
 import top.itning.smpandroid.ui.listener.AbstractLoadMoreListener;
+import top.itning.smpandroid.util.DateUtils;
 import top.itning.smpandroid.util.PageUtils;
+
+import static top.itning.smpandroid.util.DateUtils.YYYYMMDD_DATE_TIME_FORMATTER_7;
+import static top.itning.smpandroid.util.DateUtils.ZONE_ID;
 
 /**
  * @author itning
  */
 public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecyclerViewAdapter.OnItemClickListener<Leave>, View.OnClickListener, DatePickerDialog.OnDateSetListener, AdapterView.OnItemSelectedListener, TextView.OnEditorActionListener {
     private static final String TAG = "LeaveActivity";
-    private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA));
     @BindView(R2.id.tb)
     MaterialToolbar toolbar;
     @BindView(R2.id.srl)
@@ -225,7 +225,7 @@ public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecy
         startTextView = newLeaveReasonView.findViewById(R.id.tv_start_time);
         endTextView = newLeaveReasonView.findViewById(R.id.tv_end_time);
         newLeaveReasonViewTextInputLayout = newLeaveReasonView.findViewById(R.id.ti_layout);
-        String nowDateStr = Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL.get()).format(new Date());
+        String nowDateStr = LocalDateTime.now(ZONE_ID).format(YYYYMMDD_DATE_TIME_FORMATTER_7);
         assert startTextView != null;
         assert endTextView != null;
         assert newLeaveReasonViewTextInputLayout != null;
@@ -496,15 +496,16 @@ public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecy
      */
     @SuppressWarnings("deprecation")
     private void handleNewLeave(@NonNull Leave leave, @NonNull TextInputLayout textInputLayout, @NonNull EditText editText) {
-        final SimpleDateFormat simpleDateFormat = SIMPLE_DATE_FORMAT_THREAD_LOCAL.get();
-        assert simpleDateFormat != null;
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("正在发送");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
         progressDialog.show();
         newLeaveDisposable = HttpHelper.get(LeaveClient.class)
-                .newLeave(simpleDateFormat.format(leave.getStartTime()), simpleDateFormat.format(leave.getEndTime()), editText.getText().toString(), leave.getLeaveType().name())
+                .newLeave(DateUtils.format(leave.getStartTime(), YYYYMMDD_DATE_TIME_FORMATTER_7),
+                        DateUtils.format(leave.getEndTime(), YYYYMMDD_DATE_TIME_FORMATTER_7),
+                        editText.getText().toString(),
+                        leave.getLeaveType().name())
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(restModel -> {

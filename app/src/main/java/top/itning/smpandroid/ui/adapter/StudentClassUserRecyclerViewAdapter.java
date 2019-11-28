@@ -12,25 +12,25 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import top.itning.smpandroid.R;
+import top.itning.smpandroid.entity.StudentClassUser;
 import top.itning.smpandroid.ui.view.RoundBackChange;
-import top.itning.smpandroid.entity.Group;
+import top.itning.smpandroid.util.DateUtils;
 
 /**
  * @author itning
  */
-public class StudentGroupRecyclerViewAdapter extends RecyclerView.Adapter<StudentGroupRecyclerViewAdapter.ViewHolder> implements View.OnClickListener {
+public class StudentClassUserRecyclerViewAdapter extends RecyclerView.Adapter<StudentClassUserRecyclerViewAdapter.ViewHolder> implements View.OnClickListener {
     private final Context context;
-    private final OnItemClickListener<Group> onItemClickListener;
-    private final List<Group> groupList;
+    private final OnItemClickListener<StudentClassUser> onItemClickListener;
+    private final List<StudentClassUser> groupList;
     private final List<Integer> colorList = new ArrayList<>(7);
     private int nexIndex;
 
-    public StudentGroupRecyclerViewAdapter(@NonNull List<Group> groupList, @NonNull Context context, @Nullable OnItemClickListener<Group> onItemClickListener) {
+    public StudentClassUserRecyclerViewAdapter(@NonNull List<StudentClassUser> groupList, @NonNull Context context, @Nullable OnItemClickListener<StudentClassUser> onItemClickListener) {
         this.context = context;
         this.onItemClickListener = onItemClickListener;
         this.groupList = groupList;
@@ -47,11 +47,11 @@ public class StudentGroupRecyclerViewAdapter extends RecyclerView.Adapter<Studen
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Group group = groupList.get(position);
-        holder.itemView.setTag(group);
-        holder.peopleCount.setText(MessageFormat.format("{0}人", group.getCount()));
-        holder.className.setText(group.getClassName());
-        holder.teacherName.setText(group.getTeacherName());
+        StudentClassUser studentClassUser = groupList.get(position);
+        holder.itemView.setTag(studentClassUser);
+        holder.peopleCount.setText(DateUtils.format(studentClassUser.getGmtCreate(), DateUtils.YYYYMMDDHHMM_DATE_TIME_FORMATTER_2));
+        holder.className.setText(studentClassUser.getStudentClass().getName());
+        holder.teacherName.setText(studentClassUser.getStudentClass().getUser().getName());
         holder.roundBackChange.setBackColor(getNextColor());
     }
 
@@ -63,7 +63,7 @@ public class StudentGroupRecyclerViewAdapter extends RecyclerView.Adapter<Studen
     @Override
     public void onClick(View v) {
         if (onItemClickListener != null) {
-            onItemClickListener.onItemClick(v, (Group) v.getTag());
+            onItemClickListener.onItemClick(v, (StudentClassUser) v.getTag());
         }
     }
 

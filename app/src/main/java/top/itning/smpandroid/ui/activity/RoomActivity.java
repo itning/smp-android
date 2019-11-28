@@ -29,11 +29,8 @@ import com.loopeer.shadow.ShadowView;
 
 import java.io.File;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,6 +49,7 @@ import top.itning.smpandroid.entity.StudentRoomCheck;
 import top.itning.smpandroid.ui.adapter.StudentRoomCheckRecyclerViewAdapter;
 import top.itning.smpandroid.ui.interpolator.BraetheInterpolator;
 import top.itning.smpandroid.ui.listener.AbstractLoadMoreListener;
+import top.itning.smpandroid.util.DateUtils;
 import top.itning.smpandroid.util.PageUtils;
 
 /**
@@ -61,7 +59,6 @@ public class RoomActivity extends AppCompatActivity {
     private static final String TAG = "RoomActivity";
     public static final int START_FACE_ACTIVITY_REQUEST_CODE = 105;
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.000");
-    private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.CHINA));
     private AMapLocationClient locationClient = null;
     @BindView(R2.id.tv_address)
     AppCompatTextView addressTextView;
@@ -179,13 +176,13 @@ public class RoomActivity extends AppCompatActivity {
         rv.addOnScrollListener(new AbstractLoadMoreListener() {
             @Override
             protected void onLoading(int countItem, int lastItem) {
-                PageUtils.getNextPageAndSize(studentRoomCheckPage, t -> initRecyleViewData(false, t.getT1(), t.getT2()));
+                PageUtils.getNextPageAndSize(studentRoomCheckPage, t -> initRecyclerViewData(false, t.getT1(), t.getT2()));
             }
         });
-        initRecyleViewData(true, PageUtils.DEFAULT_PAGE, PageUtils.DEFAULT_SIZE);
+        initRecyclerViewData(true, PageUtils.DEFAULT_PAGE, PageUtils.DEFAULT_SIZE);
     }
 
-    private void initRecyleViewData(boolean clear, @Nullable Integer page, @Nullable Integer size) {
+    private void initRecyclerViewData(boolean clear, @Nullable Integer page, @Nullable Integer size) {
         swipeRefreshLayout.setRefreshing(true);
         disposable = HttpHelper
                 .get(RoomClient.class)
@@ -217,7 +214,7 @@ public class RoomActivity extends AppCompatActivity {
 
     private void setLastCheckTimeTextView(@Nullable Integer page, StudentRoomCheck studentRoomCheck) {
         if (page == null || page == 0) {
-            lastCheckTimeTextView.setText(Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL.get()).format(studentRoomCheck.getCheckTime()));
+            lastCheckTimeTextView.setText(DateUtils.format(studentRoomCheck.getCheckTime(), DateUtils.YYYYMMDDHHMM_DATE_TIME_FORMATTER_3));
         }
     }
 
@@ -227,7 +224,7 @@ public class RoomActivity extends AppCompatActivity {
                 R.color.class_color_2, R.color.class_color_3, R.color.class_color_4,
                 R.color.class_color_5, R.color.class_color_6, R.color.class_color_7
         );
-        swipeRefreshLayout.setOnRefreshListener(() -> initRecyleViewData(true, PageUtils.DEFAULT_PAGE, PageUtils.DEFAULT_SIZE));
+        swipeRefreshLayout.setOnRefreshListener(() -> initRecyclerViewData(true, PageUtils.DEFAULT_PAGE, PageUtils.DEFAULT_SIZE));
     }
 
     private void initShadowViewAnimator() {

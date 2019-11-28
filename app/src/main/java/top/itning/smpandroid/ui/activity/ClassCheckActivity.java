@@ -3,11 +3,11 @@ package top.itning.smpandroid.ui.activity;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,23 +28,31 @@ import com.loopeer.shadow.ShadowView;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import top.itning.smpandroid.R;
 import top.itning.smpandroid.R2;
-import top.itning.smpandroid.entity.Group;
-import top.itning.smpandroid.entity.StudentGroupCheck;
-import top.itning.smpandroid.ui.adapter.StudentGroupCheckRecylerViewAdapter;
+import top.itning.smpandroid.client.ClassClient;
+import top.itning.smpandroid.client.http.HttpHelper;
+import top.itning.smpandroid.client.http.Page;
+import top.itning.smpandroid.entity.StudentClassCheck;
+import top.itning.smpandroid.entity.StudentClassUser;
+import top.itning.smpandroid.ui.adapter.StudentClassCheckRecyclerViewAdapter;
 import top.itning.smpandroid.ui.interpolator.BraetheInterpolator;
+import top.itning.smpandroid.ui.listener.AbstractLoadMoreListener;
+import top.itning.smpandroid.util.DateUtils;
+import top.itning.smpandroid.util.PageUtils;
 
 /**
  * @author itning
  */
-public class GroupActivity extends AppCompatActivity {
-    private final static String TAG = "GroupActivity";
+public class ClassCheckActivity extends AppCompatActivity {
+    private final static String TAG = "ClassCheckActivity";
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.000");
     private AMapLocationClient locationClient = null;
     @BindView(R2.id.tv_address)
@@ -59,20 +67,25 @@ public class GroupActivity extends AppCompatActivity {
     CoordinatorLayout coordinatorLayout;
     @BindView(R2.id.sv)
     ShadowView shadowView;
+    @BindView(R2.id.tv_last_check_time)
+    TextView lastCheckTimeTextView;
     @Nullable
-    private Group group;
+    private StudentClassUser studentClassUserFromIntent;
     private ObjectAnimator alphaAnimator1;
     private ObjectAnimator alphaAnimator2;
+    private List<StudentClassCheck> studentClassCheckList;
+    private Page<StudentClassCheck> studentClassCheckPage;
+    private Disposable initRecyclerViewDataDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_group);
+        setContentView(R.layout.activity_class_check);
         ButterKnife.bind(this);
-        group = (Group) getIntent().getSerializableExtra("data");
+        studentClassUserFromIntent = (StudentClassUser) getIntent().getSerializableExtra("data");
         initView();
         initLocation();
-        Log.d(TAG, group == null ? "null" : group.toString());
+        Log.d(TAG, studentClassUserFromIntent == null ? "null" : studentClassUserFromIntent.toString());
     }
 
     private void initLocation() {
@@ -152,28 +165,54 @@ public class GroupActivity extends AppCompatActivity {
     private void initRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         rv.setLayoutManager(layoutManager);
-        List<StudentGroupCheck> list = new ArrayList<>();
-        init(list);
-        rv.setAdapter(new StudentGroupCheckRecylerViewAdapter(list, this));
+        studentClassCheckList = new ArrayList<>();
+        rv.setAdapter(new StudentClassCheckRecyclerViewAdapter(studentClassCheckList, this));
+        rv.clearOnScrollListeners();
+        rv.addOnScrollListener(new AbstractLoadMoreListener() {
+            @Override
+            protected void onLoading(int countItem, int lastItem) {
+                PageUtils.getNextPageAndSize(studentClassCheckPage, t -> initRecyclerViewData(false, t.getT1(), t.getT2()));
+            }
+        });
+        initRecyclerViewData(true, PageUtils.DEFAULT_PAGE, PageUtils.DEFAULT_SIZE);
     }
 
-    private void init(List<StudentGroupCheck> list) {
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
-        list.add(new StudentGroupCheck(new Date()));
+    private void initRecyclerViewData(boolean clear, @Nullable Integer page, @Nullable Integer size) {
+        if (studentClassUserFromIntent == null) {
+            Snackbar.make(coordinatorLayout, "获取数据失败", Snackbar.LENGTH_LONG).show();
+            return;
+        }
+        initRecyclerViewDataDisposable = HttpHelper.get(ClassClient.class)
+                .getAllChecks(studentClassUserFromIntent.getStudentClass().getId(), page, size)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(pageRestModel -> {
+                    if (pageRestModel.getData().getContent() == null || pageRestModel.getData().getContent().isEmpty()) {
+                        swipeRefreshLayout.setRefreshing(false);
+                        return;
+                    }
+                    if (clear) {
+                        studentClassCheckList.clear();
+                    }
+                    studentClassCheckPage = pageRestModel.getData();
+                    setLastCheckTimeTextView(page, pageRestModel.getData().getContent().get(0));
+                    studentClassCheckList.addAll(pageRestModel.getData().getContent());
+                    if (rv.getAdapter() != null) {
+                        rv.getAdapter().notifyDataSetChanged();
+                    }
+                    swipeRefreshLayout.setRefreshing(false);
+                }, HttpHelper.ErrorInvoke.get(this)
+                        .before(t -> swipeRefreshLayout.setRefreshing(false))
+                        .orElseException(t -> {
+                            Log.w(TAG, "网络请求错误", t);
+                            Snackbar.make(coordinatorLayout, "网络请求错误", Snackbar.LENGTH_LONG).show();
+                        }));
+    }
+
+    private void setLastCheckTimeTextView(@Nullable Integer page, StudentClassCheck studentClassCheck) {
+        if (page == null || page == 0) {
+            lastCheckTimeTextView.setText(DateUtils.format(studentClassCheck.getCheckTime(), DateUtils.YYYYMMDDHHMM_DATE_TIME_FORMATTER_3));
+        }
     }
 
     private void initSwipeRefreshLayout() {
@@ -182,10 +221,7 @@ public class GroupActivity extends AppCompatActivity {
                 R.color.class_color_2, R.color.class_color_3, R.color.class_color_4,
                 R.color.class_color_5, R.color.class_color_6, R.color.class_color_7
         );
-        swipeRefreshLayout.setOnRefreshListener(() -> new Handler().postDelayed(() -> {
-            swipeRefreshLayout.setRefreshing(false);
-            Snackbar.make(coordinatorLayout, "已刷新", Snackbar.LENGTH_LONG).show();
-        }, 4000));
+        swipeRefreshLayout.setOnRefreshListener(() -> initRecyclerViewData(true, PageUtils.DEFAULT_PAGE, PageUtils.DEFAULT_SIZE));
     }
 
     private void initShadowViewAnimator() {
@@ -246,6 +282,9 @@ public class GroupActivity extends AppCompatActivity {
             alphaAnimator2.removeAllListeners();
             alphaAnimator2.end();
             alphaAnimator2.cancel();
+        }
+        if (initRecyclerViewDataDisposable != null && !initRecyclerViewDataDisposable.isDisposed()) {
+            initRecyclerViewDataDisposable.dispose();
         }
         super.onBackPressed();
     }

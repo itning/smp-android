@@ -6,13 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="top.itning.smpandroid.ui.activity.GroupActivity">
+    tools:context="top.itning.smpandroid.ui.activity.ClassCheckActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/tb"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        toolbar:title="群组详情" />
+        toolbar:title="班级详情" />
 
     <com.loopeer.shadow.ShadowView
         android:id="@+id/sv"

@@ -12,22 +12,18 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 import top.itning.smpandroid.R;
 import top.itning.smpandroid.entity.Leave;
 import top.itning.smpandroid.ui.view.RoundBackChange;
+import top.itning.smpandroid.util.DateUtils;
 
 /**
  * @author itning
  */
 public class StudentLeaveRecyclerViewAdapter extends RecyclerView.Adapter<StudentLeaveRecyclerViewAdapter.ViewHolder> implements View.OnClickListener {
-    private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA));
-    private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL_2 = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA));
     private final Context context;
     private final List<Leave> leaveList;
     private final OnItemClickListener<Leave> onItemClickListener;
@@ -55,7 +51,7 @@ public class StudentLeaveRecyclerViewAdapter extends RecyclerView.Adapter<Studen
         holder.itemView.setTag(leave);
         holder.type.setText(getTypeStr(leave));
         holder.status.setText(getStatusStr(leave));
-        String timeStr = Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL_2.get()).format(leave.getStartTime()) + "-" + Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL_2.get()).format(leave.getEndTime());
+        String timeStr = DateUtils.format(leave.getStartTime(), DateUtils.YYYYMMDD_DATE_TIME_FORMATTER_6) + "-" + DateUtils.format(leave.getEndTime(), DateUtils.YYYYMMDD_DATE_TIME_FORMATTER_6);
         holder.time.setText(timeStr);
         holder.roundBackChange.setBackColor(getNextColor());
     }
@@ -145,7 +141,7 @@ public class StudentLeaveRecyclerViewAdapter extends RecyclerView.Adapter<Studen
             }
             default:
         }
-        sb.append(" ").append(Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL.get()).format(leave.getGmtCreate()));
+        sb.append(" ").append(DateUtils.format(leave.getGmtCreate(), DateUtils.YYYYMMDD_DATE_TIME_FORMATTER_5));
         return sb.toString();
     }
 

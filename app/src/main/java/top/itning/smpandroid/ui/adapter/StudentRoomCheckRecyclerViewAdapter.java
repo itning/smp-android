@@ -11,21 +11,18 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 import top.itning.smpandroid.R;
 import top.itning.smpandroid.entity.StudentRoomCheck;
 import top.itning.smpandroid.ui.view.RoundBackChange;
+import top.itning.smpandroid.util.DateUtils;
 
 /**
  * @author itning
  */
 public class StudentRoomCheckRecyclerViewAdapter extends RecyclerView.Adapter<StudentRoomCheckRecyclerViewAdapter.ViewHolder> {
-    private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.CHINA));
     private final List<StudentRoomCheck> studentRoomCheckList;
     private Context context;
     private final List<Integer> colorList = new ArrayList<>(7);
@@ -47,7 +44,7 @@ public class StudentRoomCheckRecyclerViewAdapter extends RecyclerView.Adapter<St
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         StudentRoomCheck studentRoomCheck = studentRoomCheckList.get(position);
-        holder.date.setText(Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL.get()).format(studentRoomCheck.getCheckTime()));
+        holder.date.setText(DateUtils.format(studentRoomCheck.getCheckTime(), DateUtils.YYYYMMDDHHMMSS_DATE_TIME_FORMATTER_1));
         holder.roundBackChange.setBackColor(getNextColor());
     }
 

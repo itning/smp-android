@@ -11,29 +11,26 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 import top.itning.smpandroid.R;
-import top.itning.smpandroid.entity.StudentGroupCheck;
+import top.itning.smpandroid.entity.StudentClassCheck;
 import top.itning.smpandroid.ui.view.RoundBackChange;
+import top.itning.smpandroid.util.DateUtils;
 
 /**
  * @author itning
  */
-public class StudentGroupCheckRecylerViewAdapter extends RecyclerView.Adapter<StudentGroupCheckRecylerViewAdapter.ViewHolder> {
-    private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.CHINA));
-    private final List<StudentGroupCheck> studentGroupCheckList;
+public class StudentClassCheckRecyclerViewAdapter extends RecyclerView.Adapter<StudentClassCheckRecyclerViewAdapter.ViewHolder> {
+    private final List<StudentClassCheck> studentClassCheckList;
     private Context context;
     private final List<Integer> colorList = new ArrayList<>(7);
     private int nexIndex;
 
 
-    public StudentGroupCheckRecylerViewAdapter(@NonNull List<StudentGroupCheck> studentGroupCheckList, @NonNull Context context) {
-        this.studentGroupCheckList = studentGroupCheckList;
+    public StudentClassCheckRecyclerViewAdapter(@NonNull List<StudentClassCheck> studentClassCheckList, @NonNull Context context) {
+        this.studentClassCheckList = studentClassCheckList;
         this.context = context;
         initColorArray();
     }
@@ -41,19 +38,19 @@ public class StudentGroupCheckRecylerViewAdapter extends RecyclerView.Adapter<St
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_student_group_check, parent, false));
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_student_class_check, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        StudentGroupCheck studentGroupCheck = studentGroupCheckList.get(position);
-        holder.date.setText(Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL.get()).format(studentGroupCheck.getCheckDate()));
+        StudentClassCheck studentClassCheck = studentClassCheckList.get(position);
+        holder.date.setText(DateUtils.format(studentClassCheck.getCheckTime(), DateUtils.YYYYMMDDHHMMSS_DATE_TIME_FORMATTER_1));
         holder.roundBackChange.setBackColor(getNextColor());
     }
 
     @Override
     public int getItemCount() {
-        return studentGroupCheckList.size();
+        return studentClassCheckList.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

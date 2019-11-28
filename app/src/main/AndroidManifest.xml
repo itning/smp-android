@@ -73,7 +73,7 @@
             android:name=".ui.activity.RoomActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.activity.GroupActivity"
+            android:name=".ui.activity.ClassCheckActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.MainActivity"

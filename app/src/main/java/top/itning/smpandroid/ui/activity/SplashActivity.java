@@ -28,9 +28,7 @@ import top.itning.smpandroid.R;
 import top.itning.smpandroid.R2;
 import top.itning.smpandroid.client.RoomClient;
 import top.itning.smpandroid.client.http.HttpHelper;
-import top.itning.smpandroid.client.http.Page;
 import top.itning.smpandroid.client.http.RestModel;
-import top.itning.smpandroid.entity.StudentRoomCheck;
 import top.itning.smpandroid.ui.view.CustomVideoView;
 
 /**
@@ -81,17 +79,17 @@ public class SplashActivity extends AppCompatActivity {
             finish();
         } else {
             HttpHelper.get(RoomClient.class)
-                    .getStudentCheckInfo(0, 1)
+                    .allowCheck()
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<RestModel<Page<StudentRoomCheck>>>() {
+                    .subscribe(new Observer<RestModel<Boolean>>() {
                         @Override
                         public void onSubscribe(Disposable d) {
 
                         }
 
                         @Override
-                        public void onNext(RestModel<Page<StudentRoomCheck>> pageRestModel) {
+                        public void onNext(RestModel<Boolean> pageRestModel) {
                             startActivity(new Intent(SplashActivity.this, MainActivity.class));
                             finish();
                         }

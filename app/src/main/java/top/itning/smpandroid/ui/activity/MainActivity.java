@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.text.Editable;
 import android.util.Log;
@@ -29,12 +28,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
@@ -46,18 +42,24 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import top.itning.smpandroid.R;
 import top.itning.smpandroid.R2;
+import top.itning.smpandroid.client.ClassClient;
 import top.itning.smpandroid.client.http.HttpHelper;
-import top.itning.smpandroid.entity.Group;
-import top.itning.smpandroid.ui.adapter.StudentGroupRecyclerViewAdapter;
+import top.itning.smpandroid.client.http.Page;
+import top.itning.smpandroid.entity.StudentClassUser;
+import top.itning.smpandroid.ui.adapter.StudentClassUserRecyclerViewAdapter;
+import top.itning.smpandroid.ui.listener.AbstractLoadMoreListener;
 import top.itning.smpandroid.util.DateUtils;
+import top.itning.smpandroid.util.PageUtils;
 import top.itning.smpandroid.util.Tuple2;
+
+import static top.itning.smpandroid.util.DateUtils.MMDDHHMME_DATE_TIME_FORMATTER_4;
+import static top.itning.smpandroid.util.DateUtils.ZONE_ID;
 
 /**
  * @author itning
  */
-public class MainActivity extends AppCompatActivity implements StudentGroupRecyclerViewAdapter.OnItemClickListener<Group> {
+public class MainActivity extends AppCompatActivity implements StudentClassUserRecyclerViewAdapter.OnItemClickListener<StudentClassUser> {
     private static final String TAG = "MainActivity";
-    private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL = ThreadLocal.withInitial(() -> new SimpleDateFormat("MM月dd日 HH:mm E", Locale.CHINA));
     private static final int SETTING_REQUEST_CODE = 104;
     private static final int MUST_PERMISSIONS_REQUEST_CODE = 100;
     @BindView(R2.id.tv_hello)
@@ -72,7 +74,13 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
     RecyclerView rv;
     @Nullable
     private TextInputLayout textInputLayout = null;
-    private Disposable disposable;
+    @Nullable
+    private Disposable titleDisposable;
+    @Nullable
+    private Disposable recyclerViewDataDisposable;
+    private List<StudentClassUser> groupList;
+    private Page<StudentClassUser> studentGroupPage;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,8 +99,8 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
 
     private void initTitleView() {
         final SharedPreferences preferences = getSharedPreferences(App.SHARED_PREFERENCES_OWN, Context.MODE_PRIVATE);
-        disposable = Observable
-                .fromCallable(() -> new Tuple2<>(Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL.get()).format(new Date()),
+        titleDisposable = Observable
+                .fromCallable(() -> new Tuple2<>(LocalDateTime.now(ZONE_ID).format(MMDDHHMME_DATE_TIME_FORMATTER_4),
                         DateUtils.helloTime(preferences.getString(HttpHelper.LOGIN_USER_NAME_KEY, null))))
                 .repeatWhen(objectObservable -> objectObservable.delay(5, TimeUnit.SECONDS))
                 .subscribeOn(Schedulers.computation())
@@ -109,37 +117,51 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
                 R.color.class_color_2, R.color.class_color_3, R.color.class_color_4,
                 R.color.class_color_5, R.color.class_color_6, R.color.class_color_7
         );
-        swipeRefreshLayout.setOnRefreshListener(() -> new Handler().postDelayed(() -> {
-            swipeRefreshLayout.setRefreshing(false);
-            Snackbar.make(coordinatorLayout, "已刷新", Snackbar.LENGTH_LONG).show();
-        }, 4000));
+        swipeRefreshLayout.setOnRefreshListener(() -> initRecyclerViewData(true, PageUtils.DEFAULT_PAGE, PageUtils.DEFAULT_SIZE));
     }
 
     private void initRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         rv.setLayoutManager(layoutManager);
-        List<Group> list = new ArrayList<>();
-        init(list);
-        rv.setAdapter(new StudentGroupRecyclerViewAdapter(list, this, this));
+        groupList = new ArrayList<>();
+        rv.setAdapter(new StudentClassUserRecyclerViewAdapter(groupList, this, this));
+        rv.clearOnScrollListeners();
+        rv.addOnScrollListener(new AbstractLoadMoreListener() {
+            @Override
+            protected void onLoading(int countItem, int lastItem) {
+                PageUtils.getNextPageAndSize(studentGroupPage, t -> initRecyclerViewData(false, t.getT1(), t.getT2()));
+            }
+        });
+        initRecyclerViewData(true, PageUtils.DEFAULT_PAGE, PageUtils.DEFAULT_SIZE);
     }
 
-    private void init(List<Group> list) {
-        list.add(new Group("高等数学（上）", "张良1", 25));
-        list.add(new Group("计算机组成原理", "张良2", 30));
-        list.add(new Group("软件测试", "张良3", 14));
-        list.add(new Group("Java EE", "张良5", 26));
-        list.add(new Group("基础英语", "张良6", 15));
-        list.add(new Group("电路与电子", "张良7", 65));
-        list.add(new Group("四六级英语", "张良8", 100));
-        list.add(new Group("软件工程", "张良0", 10));
-        list.add(new Group("计算机组成原理", "张良1", 10));
-        list.add(new Group("电路与电子", "张良2", 44));
-        list.add(new Group("电路与电子", "张良2", 10));
-        list.add(new Group("电路与电子", "张良2", 25));
-        list.add(new Group("电路与电子", "张良2", 66));
-        list.add(new Group("电路与电子", "张良2", 22));
-        list.add(new Group("电路与电子", "张良2", 15));
-        list.add(new Group("电路与电子", "张良2", 10));
+    private void initRecyclerViewData(boolean clear, @Nullable Integer page, @Nullable Integer size) {
+        swipeRefreshLayout.setRefreshing(true);
+        recyclerViewDataDisposable = HttpHelper.get(ClassClient.class)
+                .getAllStudentGroup(page, size)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(pageRestModel -> {
+                    if (pageRestModel.getData().getContent() == null || pageRestModel.getData().getContent().isEmpty()) {
+                        swipeRefreshLayout.setRefreshing(false);
+                        return;
+                    }
+                    if (clear) {
+                        groupList.clear();
+                    }
+                    studentGroupPage = pageRestModel.getData();
+                    groupList.addAll(pageRestModel.getData().getContent());
+                    if (rv.getAdapter() != null) {
+                        rv.getAdapter().notifyDataSetChanged();
+                    }
+                    swipeRefreshLayout.setRefreshing(false);
+                }, HttpHelper.ErrorInvoke.get(this)
+                        .before(t -> swipeRefreshLayout.setRefreshing(false))
+                        .orElseException(t -> {
+                            Log.w(TAG, "网络请求错误", t);
+                            Snackbar.make(coordinatorLayout, "网络请求错误", Snackbar.LENGTH_LONG).show();
+                        }));
+
     }
 
     public void onShadowClick(View view) {
@@ -207,9 +229,9 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
     }
 
     @Override
-    public void onItemClick(View view, Group object) {
+    public void onItemClick(View view, StudentClassUser object) {
         Log.d(TAG, object.toString());
-        Intent intent = new Intent(this, GroupActivity.class);
+        Intent intent = new Intent(this, ClassCheckActivity.class);
         intent.putExtra("data", object);
         startActivity(intent);
     }
@@ -248,8 +270,11 @@ public class MainActivity extends AppCompatActivity implements StudentGroupRecyc
 
     @Override
     public void onBackPressed() {
-        if (disposable != null && !disposable.isDisposed()) {
-            disposable.dispose();
+        if (titleDisposable != null && !titleDisposable.isDisposed()) {
+            titleDisposable.dispose();
+        }
+        if (recyclerViewDataDisposable != null && !recyclerViewDataDisposable.isDisposed()) {
+            recyclerViewDataDisposable.dispose();
         }
         super.onBackPressed();
     }

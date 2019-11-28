@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="top.itning.smpandroid.ui.activity.GroupActivity">
+    tools:context="top.itning.smpandroid.ui.activity.ClassCheckActivity">
     <item
         android:id="@+id/item_exit_group"
         android:title="退出群组"

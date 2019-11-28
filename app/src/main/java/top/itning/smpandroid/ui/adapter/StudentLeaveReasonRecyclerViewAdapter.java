@@ -11,21 +11,18 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 import top.itning.smpandroid.R;
 import top.itning.smpandroid.entity.LeaveReason;
 import top.itning.smpandroid.ui.view.RoundBackChange;
+import top.itning.smpandroid.util.DateUtils;
 
 /**
  * @author itning
  */
 public class StudentLeaveReasonRecyclerViewAdapter extends RecyclerView.Adapter<StudentLeaveReasonRecyclerViewAdapter.ViewHolder> {
-    private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.CHINA));
     private final Context context;
     private final List<LeaveReason> leaveReasonList;
     private final List<Integer> colorList = new ArrayList<>(7);
@@ -101,6 +98,6 @@ public class StudentLeaveReasonRecyclerViewAdapter extends RecyclerView.Adapter<
     }
 
     private String getFromStr(LeaveReason leaveReason) {
-        return leaveReason.getFromUser().getName() + " " + Objects.requireNonNull(SIMPLE_DATE_FORMAT_THREAD_LOCAL.get()).format(leaveReason.getGmtCreate());
+        return leaveReason.getFromUser().getName() + " " + DateUtils.format(leaveReason.getGmtCreate(), DateUtils.YYYYMMDDHHMMSS_DATE_TIME_FORMATTER_8);
     }
 }
