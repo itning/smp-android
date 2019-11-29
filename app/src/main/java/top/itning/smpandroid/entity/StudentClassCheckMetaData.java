@@ -6,29 +6,22 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * 学生课堂签到
- * 每个群组的签到信息
- *
  * @author itning
  */
 @Data
-public class StudentClassCheck implements Serializable {
+public class StudentClassCheckMetaData implements Serializable {
     /**
-     * ID
+     * 元数据ID
      */
     private String id;
     /**
-     * 学生信息
+     * 签到开始时间
      */
-    private User user;
+    private Date startTime;
     /**
-     * 所属群组
+     * 签到结束时间
      */
-    private StudentClass studentClass;
-    /**
-     * 签到时间
-     */
-    private Date checkTime;
+    private Date endTime;
     /**
      * 经度
      */
@@ -38,9 +31,13 @@ public class StudentClassCheck implements Serializable {
      */
     private double latitude;
     /**
-     * 本次签到所对应的元数据
+     * 签到者距离教师经纬度最大距离
      */
-    private StudentClassCheckMetaData studentClassCheckMetaData;
+    private float m;
+    /**
+     * 元数据所对应的班级
+     */
+    private StudentClass studentClass;
     /**
      * 创建时间
      */

@@ -1,7 +1,10 @@
 package top.itning.smpandroid.client;
 
 import io.reactivex.Observable;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import top.itning.smpandroid.client.http.Page;
@@ -33,4 +36,25 @@ public interface ClassClient {
      */
     @GET("/class/checks/{studentClassId}")
     Observable<RestModel<Page<StudentClassCheck>>> getAllChecks(@Path("studentClassId") String studentClassId, @Query("page") Integer page, @Query("size") Integer size);
+
+    /**
+     * 检查是否可以签到
+     *
+     * @param studentClassId 学生班级ID
+     * @return 可以签到返回<code>true</code>
+     */
+    @GET("/class/can_check/{studentClassId}")
+    Observable<RestModel<Boolean>> canCheck(@Path("studentClassId") String studentClassId);
+
+    /**
+     * 学生课堂签到
+     *
+     * @param longitude      经度
+     * @param latitude       纬度
+     * @param studentClassId 课堂ID
+     * @return 学生课堂签到
+     */
+    @FormUrlEncoded
+    @POST("/class/check")
+    Observable<RestModel<StudentClassCheck>> check(@Field("longitude") double longitude, @Field("latitude") double latitude, @Field("studentClassId") String studentClassId);
 }

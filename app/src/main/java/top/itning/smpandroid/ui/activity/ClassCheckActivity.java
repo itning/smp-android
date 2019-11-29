@@ -2,6 +2,7 @@ package top.itning.smpandroid.ui.activity;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -75,7 +76,14 @@ public class ClassCheckActivity extends AppCompatActivity {
     private ObjectAnimator alphaAnimator2;
     private List<StudentClassCheck> studentClassCheckList;
     private Page<StudentClassCheck> studentClassCheckPage;
+    @Nullable
     private Disposable initRecyclerViewDataDisposable;
+    @Nullable
+    private Disposable canCheckDisposable;
+    @Nullable
+    private Disposable checkDisposable;
+    private double longitude = 0;
+    private double latitude = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +93,6 @@ public class ClassCheckActivity extends AppCompatActivity {
         studentClassUserFromIntent = (StudentClassUser) getIntent().getSerializableExtra("data");
         initView();
         initLocation();
-        Log.d(TAG, studentClassUserFromIntent == null ? "null" : studentClassUserFromIntent.toString());
     }
 
     private void initLocation() {
@@ -96,6 +103,8 @@ public class ClassCheckActivity extends AppCompatActivity {
             if (aMapLocation != null) {
                 if (aMapLocation.getErrorCode() == 0) {
                     //可在其中解析amapLocation获取相应内容。
+                    longitude = aMapLocation.getLongitude();
+                    latitude = aMapLocation.getLatitude();
                     if (addressTextView != null) {
                         if (!"".equals(aMapLocation.getDescription())) {
                             addressTextView.setText(aMapLocation.getDescription());
@@ -132,7 +141,7 @@ public class ClassCheckActivity extends AppCompatActivity {
         //设置是否返回地址信息（默认返回地址信息）
         locationOption.setNeedAddress(true);
         //设置是否允许模拟位置,默认为true，允许模拟位置
-        locationOption.setMockEnable(false);
+        locationOption.setMockEnable(true);
         //给定位客户端对象设置定位参数
         locationClient.setLocationOption(locationOption);
         //启动定位
@@ -286,6 +295,12 @@ public class ClassCheckActivity extends AppCompatActivity {
         if (initRecyclerViewDataDisposable != null && !initRecyclerViewDataDisposable.isDisposed()) {
             initRecyclerViewDataDisposable.dispose();
         }
+        if (canCheckDisposable != null && !canCheckDisposable.isDisposed()) {
+            canCheckDisposable.dispose();
+        }
+        if (checkDisposable != null && !checkDisposable.isDisposed()) {
+            checkDisposable.dispose();
+        }
         super.onBackPressed();
     }
 
@@ -306,6 +321,60 @@ public class ClassCheckActivity extends AppCompatActivity {
     }
 
     public void onShadowClick(View view) {
-        Snackbar.make(coordinatorLayout, "老师没有开启签到", Snackbar.LENGTH_LONG).show();
+        if (studentClassUserFromIntent == null) {
+            Snackbar.make(coordinatorLayout, "无法签到，获取班级信息失败", Snackbar.LENGTH_LONG).show();
+            return;
+        }
+        String studentClassId = studentClassUserFromIntent.getStudentClass().getId();
+        canCheckDisposable = HttpHelper.get(ClassClient.class)
+                .canCheck(studentClassId)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(booleanRestModel -> {
+                    if (booleanRestModel.getData()) {
+                        doClassCheck();
+                    } else {
+                        Snackbar.make(coordinatorLayout, "教师未开启签到", Snackbar.LENGTH_LONG).show();
+                    }
+                }, HttpHelper.ErrorInvoke.get(this)
+                        .orElseException(t -> {
+                            Log.w(TAG, "网络请求错误", t);
+                            Snackbar.make(coordinatorLayout, "网络请求错误", Snackbar.LENGTH_LONG).show();
+                        }));
+    }
+
+    @SuppressWarnings("deprecation")
+    private void doClassCheck() {
+        if (studentClassUserFromIntent == null) {
+            Snackbar.make(coordinatorLayout, "无法签到，获取班级信息失败", Snackbar.LENGTH_LONG).show();
+            return;
+        }
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("正在签到");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        checkDisposable = HttpHelper.get(ClassClient.class)
+                .check(longitude, latitude, studentClassUserFromIntent.getStudentClass().getId())
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(studentClassCheckRestModel -> {
+                    studentClassCheckList.add(0, studentClassCheckRestModel.getData());
+                    if (rv.getAdapter() != null) {
+                        rv.getAdapter().notifyDataSetChanged();
+                    }
+                    setLastCheckTimeTextView(0, studentClassCheckRestModel.getData());
+                    progressDialog.dismiss();
+                    Snackbar.make(coordinatorLayout, "签到成功", Snackbar.LENGTH_LONG).show();
+                }, HttpHelper.ErrorInvoke.get(this)
+                        .before(t -> progressDialog.dismiss())
+                        .orElseCode(t -> {
+                            String msg = t.getT2() != null ? t.getT2().getMsg() : t.getT1().code() + "";
+                            Snackbar.make(coordinatorLayout, msg, Snackbar.LENGTH_LONG).show();
+                        })
+                        .orElseException(t -> {
+                            Log.w(TAG, "网络请求错误", t);
+                            Snackbar.make(coordinatorLayout, "网络请求错误", Snackbar.LENGTH_LONG).show();
+                        }));
     }
 }
