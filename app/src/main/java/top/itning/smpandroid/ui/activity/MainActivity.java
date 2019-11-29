@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
     private Disposable recyclerViewDataDisposable;
     private List<StudentClassUser> groupList;
     private Page<StudentClassUser> studentGroupPage;
+    private Disposable joinDisposable;
 
 
     @Override
@@ -211,8 +212,13 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
                     if (textInputLayout != null) {
                         EditText editText = textInputLayout.getEditText();
                         if (editText != null) {
+                            if (editText.getText().length() == 0 || "".contentEquals(editText.getText())) {
+                                Snackbar.make(coordinatorLayout, "请输入班号", Snackbar.LENGTH_LONG).show();
+                                return;
+                            }
                             Editable editable = editText.getText();
                             Log.d(TAG, editable.toString());
+                            doJoinClass(editable.toString());
                         }
                     }
                 })
@@ -228,9 +234,26 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
         }
     }
 
+    private void doJoinClass(String classNum) {
+        joinDisposable = HttpHelper.get(ClassClient.class)
+                .joinClass(classNum)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(pageRestModel -> {
+                    groupList.add(0, pageRestModel.getData());
+                    if (rv.getAdapter() != null) {
+                        rv.getAdapter().notifyDataSetChanged();
+                    }
+                }, HttpHelper.ErrorInvoke.get(this)
+                        .orElseCode(t -> Snackbar.make(coordinatorLayout, t.getT2() == null ? t.getT1().code() + "" : t.getT2().getMsg(), Snackbar.LENGTH_LONG).show())
+                        .orElseException(t -> {
+                            Log.w(TAG, "网络请求错误", t);
+                            Snackbar.make(coordinatorLayout, "网络请求错误", Snackbar.LENGTH_LONG).show();
+                        }));
+    }
+
     @Override
     public void onItemClick(View view, StudentClassUser object) {
-        Log.d(TAG, object.toString());
         Intent intent = new Intent(this, ClassCheckActivity.class);
         intent.putExtra("data", object);
         startActivity(intent);
@@ -275,6 +298,9 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
         }
         if (recyclerViewDataDisposable != null && !recyclerViewDataDisposable.isDisposed()) {
             recyclerViewDataDisposable.dispose();
+        }
+        if (joinDisposable != null && !joinDisposable.isDisposed()) {
+            joinDisposable.dispose();
         }
         super.onBackPressed();
     }

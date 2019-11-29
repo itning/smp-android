@@ -57,4 +57,14 @@ public interface ClassClient {
     @FormUrlEncoded
     @POST("/class/check")
     Observable<RestModel<StudentClassCheck>> check(@Field("longitude") double longitude, @Field("latitude") double latitude, @Field("studentClassId") String studentClassId);
+
+    /**
+     * 加入班级
+     *
+     * @param classNum 班号
+     * @return 加入的班级
+     */
+    @FormUrlEncoded
+    @POST("/class/join_class")
+    Observable<RestModel<StudentClassUser>> joinClass(@Field("classNum") String classNum);
 }
