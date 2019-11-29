@@ -190,7 +190,7 @@ public class RoomActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(pageRestModel -> {
-                    if (pageRestModel.getData().getContent() == null || pageRestModel.getData().getContent().isEmpty()) {
+                    if (pageRestModel.getData().getContent() == null) {
                         swipeRefreshLayout.setRefreshing(false);
                         return;
                     }

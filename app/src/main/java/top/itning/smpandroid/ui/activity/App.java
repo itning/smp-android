@@ -13,6 +13,7 @@ import top.itning.smpandroid.client.http.HttpHelper;
  */
 public class App extends Application {
     public static final String SHARED_PREFERENCES_OWN = "smp_data";
+    public static boolean needRefreshStudentClassUserData = false;
 
     @Nullable
     public static SharedPreferences smpDataSharedPreferences;

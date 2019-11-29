@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
     private Disposable titleDisposable;
     @Nullable
     private Disposable recyclerViewDataDisposable;
-    private List<StudentClassUser> groupList;
+    private List<StudentClassUser> studentClassUserList;
     private Page<StudentClassUser> studentGroupPage;
     private Disposable joinDisposable;
 
@@ -124,8 +124,8 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
     private void initRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         rv.setLayoutManager(layoutManager);
-        groupList = new ArrayList<>();
-        rv.setAdapter(new StudentClassUserRecyclerViewAdapter(groupList, this, this));
+        studentClassUserList = new ArrayList<>();
+        rv.setAdapter(new StudentClassUserRecyclerViewAdapter(studentClassUserList, this, this));
         rv.clearOnScrollListeners();
         rv.addOnScrollListener(new AbstractLoadMoreListener() {
             @Override
@@ -143,15 +143,15 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(pageRestModel -> {
-                    if (pageRestModel.getData().getContent() == null || pageRestModel.getData().getContent().isEmpty()) {
+                    if (pageRestModel.getData().getContent() == null) {
                         swipeRefreshLayout.setRefreshing(false);
                         return;
                     }
                     if (clear) {
-                        groupList.clear();
+                        studentClassUserList.clear();
                     }
                     studentGroupPage = pageRestModel.getData();
-                    groupList.addAll(pageRestModel.getData().getContent());
+                    studentClassUserList.addAll(pageRestModel.getData().getContent());
                     if (rv.getAdapter() != null) {
                         rv.getAdapter().notifyDataSetChanged();
                     }
@@ -240,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(pageRestModel -> {
-                    groupList.add(0, pageRestModel.getData());
+                    studentClassUserList.add(0, pageRestModel.getData());
                     if (rv.getAdapter() != null) {
                         rv.getAdapter().notifyDataSetChanged();
                     }
@@ -303,5 +303,14 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
             joinDisposable.dispose();
         }
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onResume() {
+        if (App.needRefreshStudentClassUserData) {
+            App.needRefreshStudentClassUserData = false;
+            initRecyclerViewData(true, PageUtils.DEFAULT_PAGE, PageUtils.DEFAULT_SIZE);
+        }
+        super.onResume();
     }
 }

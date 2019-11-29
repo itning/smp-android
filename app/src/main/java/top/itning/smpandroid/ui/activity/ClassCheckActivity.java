@@ -9,12 +9,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -52,7 +54,7 @@ import top.itning.smpandroid.util.PageUtils;
 /**
  * @author itning
  */
-public class ClassCheckActivity extends AppCompatActivity {
+public class ClassCheckActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener {
     private final static String TAG = "ClassCheckActivity";
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.000");
     private AMapLocationClient locationClient = null;
@@ -84,6 +86,7 @@ public class ClassCheckActivity extends AppCompatActivity {
     private Disposable checkDisposable;
     private double longitude = 0;
     private double latitude = 0;
+    private Disposable quitClassDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,13 +165,7 @@ public class ClassCheckActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowHomeEnabled(true);
         }
-        toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.item_exit_group) {
-                Log.d(TAG, "退出群组");
-                return true;
-            }
-            return false;
-        });
+        toolbar.setOnMenuItemClickListener(this);
     }
 
     private void initRecyclerView() {
@@ -196,7 +193,7 @@ public class ClassCheckActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(pageRestModel -> {
-                    if (pageRestModel.getData().getContent() == null || pageRestModel.getData().getContent().isEmpty()) {
+                    if (pageRestModel.getData().getContent() == null) {
                         swipeRefreshLayout.setRefreshing(false);
                         return;
                     }
@@ -301,6 +298,9 @@ public class ClassCheckActivity extends AppCompatActivity {
         if (checkDisposable != null && !checkDisposable.isDisposed()) {
             checkDisposable.dispose();
         }
+        if (quitClassDisposable != null && !quitClassDisposable.isDisposed()) {
+            quitClassDisposable.dispose();
+        }
         super.onBackPressed();
     }
 
@@ -376,5 +376,42 @@ public class ClassCheckActivity extends AppCompatActivity {
                             Log.w(TAG, "网络请求错误", t);
                             Snackbar.make(coordinatorLayout, "网络请求错误", Snackbar.LENGTH_LONG).show();
                         }));
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        if (item.getItemId() == R.id.item_exit_group) {
+            if (studentClassUserFromIntent == null) {
+                Snackbar.make(coordinatorLayout, "班级信息异常", Snackbar.LENGTH_LONG).show();
+                return false;
+            }
+            ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("请稍后");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+            quitClassDisposable = HttpHelper.get(ClassClient.class)
+                    .quitClass(studentClassUserFromIntent.getStudentClass().getId())
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(noContent -> {
+                        App.needRefreshStudentClassUserData = true;
+                        progressDialog.dismiss();
+                        Toast.makeText(this, "退出成功", Toast.LENGTH_LONG).show();
+                        onBackPressed();
+                    }, HttpHelper.ErrorInvoke.get(this)
+                            .before(t -> progressDialog.dismiss())
+                            .orElseCode(t -> {
+                                String msg = t.getT2() != null ? t.getT2().getMsg() : t.getT1().code() + "";
+                                Snackbar.make(coordinatorLayout, msg, Snackbar.LENGTH_LONG).show();
+                            })
+                            .orElseException(t -> {
+                                Log.w(TAG, "网络请求错误", t);
+                                Snackbar.make(coordinatorLayout, "网络请求错误", Snackbar.LENGTH_LONG).show();
+                            }));
+            return true;
+        }
+        return false;
     }
 }

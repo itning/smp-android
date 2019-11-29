@@ -5,6 +5,6 @@
     tools:context="top.itning.smpandroid.ui.activity.ClassCheckActivity">
     <item
         android:id="@+id/item_exit_group"
-        android:title="退出群组"
+        android:title="退出班级"
         app:showAsAction="never" />
 </menu>

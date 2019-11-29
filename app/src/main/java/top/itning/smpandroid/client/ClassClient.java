@@ -1,6 +1,7 @@
 package top.itning.smpandroid.client;
 
 import io.reactivex.Observable;
+import retrofit2.Response;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -67,4 +68,14 @@ public interface ClassClient {
     @FormUrlEncoded
     @POST("/class/join_class")
     Observable<RestModel<StudentClassUser>> joinClass(@Field("classNum") String classNum);
+
+    /**
+     * 退出班级
+     *
+     * @param studentClassId 班级ID
+     * @return void
+     */
+    @FormUrlEncoded
+    @POST("/class/quit_class")
+    Observable<Response<Object>> quitClass(@Field("studentClassId") String studentClassId);
 }
