@@ -26,7 +26,7 @@ import io.reactivex.schedulers.Schedulers;
 import retrofit2.HttpException;
 import top.itning.smpandroid.R;
 import top.itning.smpandroid.R2;
-import top.itning.smpandroid.client.RoomClient;
+import top.itning.smpandroid.client.SecurityClient;
 import top.itning.smpandroid.client.http.HttpHelper;
 import top.itning.smpandroid.client.http.RestModel;
 import top.itning.smpandroid.ui.view.CustomVideoView;
@@ -78,18 +78,18 @@ public class SplashActivity extends AppCompatActivity {
             startActivity(new Intent(SplashActivity.this, LoginActivity.class));
             finish();
         } else {
-            HttpHelper.get(RoomClient.class)
-                    .allowCheck()
+            HttpHelper.get(SecurityClient.class)
+                    .ping()
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<RestModel<Boolean>>() {
+                    .subscribe(new Observer<RestModel<String>>() {
                         @Override
                         public void onSubscribe(Disposable d) {
 
                         }
 
                         @Override
-                        public void onNext(RestModel<Boolean> pageRestModel) {
+                        public void onNext(RestModel<String> pageRestModel) {
                             startActivity(new Intent(SplashActivity.this, MainActivity.class));
                             finish();
                         }

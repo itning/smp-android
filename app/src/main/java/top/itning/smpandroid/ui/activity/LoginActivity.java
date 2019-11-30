@@ -35,7 +35,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import top.itning.smpandroid.R;
 import top.itning.smpandroid.R2;
-import top.itning.smpandroid.client.LoginClient;
+import top.itning.smpandroid.client.SecurityClient;
 import top.itning.smpandroid.client.http.HttpHelper;
 import top.itning.smpandroid.entity.LoginUser;
 import top.itning.smpandroid.entity.Wrap;
@@ -178,7 +178,7 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
         progressDialog.show();
-        disposable = HttpHelper.get(LoginClient.class)
+        disposable = HttpHelper.get(SecurityClient.class)
                 .login(username, password)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
