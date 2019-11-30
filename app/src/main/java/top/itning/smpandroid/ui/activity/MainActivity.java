@@ -273,8 +273,8 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
             } else {
                 new AlertDialog
                         .Builder(this)
-                        .setTitle("需要相机和外置存储权限")
-                        .setMessage("请授予相机和外置存储权限")
+                        .setTitle("需要权限")
+                        .setMessage("请授予权限")
                         .setCancelable(false)
                         .setPositiveButton("确定", (dialog, which) -> startActivityForResult(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", getPackageName(), null)), SETTING_REQUEST_CODE))
                         .show();

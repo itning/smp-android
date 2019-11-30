@@ -102,7 +102,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="我加入的群组"
+        android:text="我加入的班级"
         android:textColor="#000"
         android:textSize="20sp" />
 
