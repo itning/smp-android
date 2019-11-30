@@ -25,7 +25,7 @@ public interface ClassClient {
      * @return 学生班级
      */
     @GET("/class/student_class_users")
-    Observable<RestModel<Page<StudentClassUser>>> getAllStudentGroup(@Query("page") Integer page, @Query("size") Integer size);
+    Observable<RestModel<Page<StudentClassUser>>> getAllStudentClassUser(@Query("page") Integer page, @Query("size") Integer size);
 
     /**
      * 获取学生签到信息

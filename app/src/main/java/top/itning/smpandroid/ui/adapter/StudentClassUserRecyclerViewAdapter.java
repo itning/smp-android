@@ -26,28 +26,28 @@ import top.itning.smpandroid.util.DateUtils;
 public class StudentClassUserRecyclerViewAdapter extends RecyclerView.Adapter<StudentClassUserRecyclerViewAdapter.ViewHolder> implements View.OnClickListener {
     private final Context context;
     private final OnItemClickListener<StudentClassUser> onItemClickListener;
-    private final List<StudentClassUser> groupList;
+    private final List<StudentClassUser> studentClassUserList;
     private final List<Integer> colorList = new ArrayList<>(7);
     private int nexIndex;
 
-    public StudentClassUserRecyclerViewAdapter(@NonNull List<StudentClassUser> groupList, @NonNull Context context, @Nullable OnItemClickListener<StudentClassUser> onItemClickListener) {
+    public StudentClassUserRecyclerViewAdapter(@NonNull List<StudentClassUser> studentClassUserList, @NonNull Context context, @Nullable OnItemClickListener<StudentClassUser> onItemClickListener) {
         this.context = context;
         this.onItemClickListener = onItemClickListener;
-        this.groupList = groupList;
+        this.studentClassUserList = studentClassUserList;
         initColorArray();
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_student_join_group, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_student_join_class, parent, false);
         view.setOnClickListener(this);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        StudentClassUser studentClassUser = groupList.get(position);
+        StudentClassUser studentClassUser = studentClassUserList.get(position);
         holder.itemView.setTag(studentClassUser);
         holder.peopleCount.setText(DateUtils.format(studentClassUser.getGmtCreate(), DateUtils.YYYYMMDDHHMM_DATE_TIME_FORMATTER_2));
         holder.className.setText(studentClassUser.getStudentClass().getName());
@@ -57,7 +57,7 @@ public class StudentClassUserRecyclerViewAdapter extends RecyclerView.Adapter<St
 
     @Override
     public int getItemCount() {
-        return groupList.size();
+        return studentClassUserList.size();
     }
 
     @Override

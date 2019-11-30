@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
     @Nullable
     private Disposable recyclerViewDataDisposable;
     private List<StudentClassUser> studentClassUserList;
-    private Page<StudentClassUser> studentGroupPage;
+    private Page<StudentClassUser> studentClassUserPage;
     private Disposable joinDisposable;
 
 
@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
         rv.addOnScrollListener(new AbstractLoadMoreListener() {
             @Override
             protected void onLoading(int countItem, int lastItem) {
-                PageUtils.getNextPageAndSize(studentGroupPage, t -> initRecyclerViewData(false, t.getT1(), t.getT2()));
+                PageUtils.getNextPageAndSize(studentClassUserPage, t -> initRecyclerViewData(false, t.getT1(), t.getT2()));
             }
         });
         initRecyclerViewData(true, PageUtils.DEFAULT_PAGE, PageUtils.DEFAULT_SIZE);
@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
     private void initRecyclerViewData(boolean clear, @Nullable Integer page, @Nullable Integer size) {
         swipeRefreshLayout.setRefreshing(true);
         recyclerViewDataDisposable = HttpHelper.get(ClassClient.class)
-                .getAllStudentGroup(page, size)
+                .getAllStudentClassUser(page, size)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(pageRestModel -> {
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
                     if (clear) {
                         studentClassUserList.clear();
                     }
-                    studentGroupPage = pageRestModel.getData();
+                    studentClassUserPage = pageRestModel.getData();
                     studentClassUserList.addAll(pageRestModel.getData().getContent());
                     if (rv.getAdapter() != null) {
                         rv.getAdapter().notifyDataSetChanged();
