@@ -185,6 +185,14 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (!videoView.isPlaying()) {
+            videoView.start();
+        }
+    }
+
+    @Override
     protected void onStop() {
         videoView.stopPlayback();
         super.onStop();
