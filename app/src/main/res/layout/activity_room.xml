@@ -58,7 +58,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="0.25"
                 android:gravity="center_horizontal|top"
-                tools:text="未知"
+                android:text="@string/check_time_default_str"
                 android:textColor="#fff" />
         </LinearLayout>
     </com.loopeer.shadow.ShadowView>

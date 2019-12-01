@@ -255,9 +255,11 @@ public class RoomActivity extends AppCompatActivity {
                     if (clear) {
                         studentRoomCheckList.clear();
                     }
-                    studentRoomCheckPage = pageRestModel.getData();
-                    setLastCheckTimeTextView(page, pageRestModel.getData().getContent().get(0));
-                    studentRoomCheckList.addAll(pageRestModel.getData().getContent());
+                    if (!pageRestModel.getData().getContent().isEmpty()) {
+                        studentRoomCheckPage = pageRestModel.getData();
+                        setLastCheckTimeTextView(page, pageRestModel.getData().getContent().get(0));
+                        studentRoomCheckList.addAll(pageRestModel.getData().getContent());
+                    }
                     if (rv.getAdapter() != null) {
                         rv.getAdapter().notifyDataSetChanged();
                     }

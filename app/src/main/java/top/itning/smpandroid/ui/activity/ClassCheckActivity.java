@@ -262,9 +262,11 @@ public class ClassCheckActivity extends AppCompatActivity implements Toolbar.OnM
                     if (clear) {
                         studentClassCheckList.clear();
                     }
-                    studentClassCheckPage = pageRestModel.getData();
-                    setLastCheckTimeTextView(page, pageRestModel.getData().getContent().get(0));
-                    studentClassCheckList.addAll(pageRestModel.getData().getContent());
+                    if (!pageRestModel.getData().getContent().isEmpty()) {
+                        studentClassCheckPage = pageRestModel.getData();
+                        setLastCheckTimeTextView(page, pageRestModel.getData().getContent().get(0));
+                        studentClassCheckList.addAll(pageRestModel.getData().getContent());
+                    }
                     if (rv.getAdapter() != null) {
                         rv.getAdapter().notifyDataSetChanged();
                     }
