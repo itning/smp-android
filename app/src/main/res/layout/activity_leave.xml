@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="10dp"
-            android:onClick="onFabClick"
+            android:onClick="onCreateNewLeaveClick"
             android:src="@drawable/outline_add_white_48"
             app:backgroundTint="@color/colorAccent"
             app:layout_behavior="top.itning.smpandroid.ui.view.FabListBehavior" />

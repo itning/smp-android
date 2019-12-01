@@ -35,16 +35,42 @@ import top.itning.smpandroid.util.Tuple2;
  * @author itning
  */
 public final class HttpHelper {
+    /**
+     * TOKEN在SharedPreferences中的KEY
+     */
     public static final String TOKEN_KEY = "token";
+    /**
+     * BASE_URL在SharedPreferences中的KEY
+     */
     public static final String BASE_URL_KEY = "base_url";
+    /**
+     * LOGIN_USER_NAME在SharedPreferences中的KEY
+     */
     public static final String LOGIN_USER_NAME_KEY = "loginUser_name";
+    /**
+     * TOKEN在请求头中的权限字段
+     */
     private static final String AUTHORIZATION = "Authorization";
+    /**
+     * Accept Header
+     */
     private static final String ACCEPT = "Accept";
+    /**
+     * JSON Type
+     */
     private static final String APPLICATION_JSON_VALUE = "application/json";
+    /**
+     * Un Authorized Code
+     */
     public static final int UNAUTHORIZED = 401;
 
     private static Retrofit RETROFIT;
 
+    /**
+     * 初始化Retrofit<br>
+     * 调用时会通过<code>App.smpDataSharedPreferences</code>中的<code>BASE_URL_KEY</code>设置的URL<br>
+     * 去设置baseUrl
+     */
     public static void initRetrofit() {
         String baseUrl = "http://localhost/";
         if (App.smpDataSharedPreferences != null) {
@@ -65,6 +91,13 @@ public final class HttpHelper {
                 .build();
     }
 
+    /**
+     * 获取RETROFIT实例
+     *
+     * @param service 服务名
+     * @param <T>     返回类型
+     * @return 代理的实例
+     */
     public static <T> T get(@NonNull final Class<T> service) {
         return RETROFIT.create(service);
     }
@@ -90,6 +123,9 @@ public final class HttpHelper {
         }
     }
 
+    /**
+     * 错误处理类
+     */
     public static class ErrorInvoke implements Consumer<Throwable> {
         /**
          * 获取错误处理实例
@@ -182,6 +218,9 @@ public final class HttpHelper {
         }
     }
 
+    /**
+     * Authorization请求头拦截器
+     */
     static class AuthorizationHeaderInterceptor implements Interceptor {
 
         @NotNull

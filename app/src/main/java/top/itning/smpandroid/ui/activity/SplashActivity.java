@@ -32,12 +32,17 @@ import top.itning.smpandroid.client.http.RestModel;
 import top.itning.smpandroid.ui.view.CustomVideoView;
 
 /**
+ * 闪屏页
+ *
  * @author itning
  */
 public class SplashActivity extends AppCompatActivity {
     private static final String TAG = "SplashActivity";
     @BindView(R2.id.videoview)
     CustomVideoView videoView;
+    /**
+     * 文本输入布局
+     */
     @Nullable
     private TextInputLayout textInputLayout = null;
 
@@ -50,7 +55,9 @@ public class SplashActivity extends AppCompatActivity {
         initView();
     }
 
-
+    /**
+     * 初始化视图
+     */
     private void initView() {
         //设置播放加载路径
         // Uri.parse("file:///android_asset/aa.mp4")
@@ -67,6 +74,9 @@ public class SplashActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * 到下个Activity
+     */
     private void nextActivity() {
         SharedPreferences sharedPreferences = getSharedPreferences(App.SHARED_PREFERENCES_OWN, Context.MODE_PRIVATE);
         if ("".equals(sharedPreferences.getString(HttpHelper.BASE_URL_KEY, "").trim())) {
@@ -122,6 +132,12 @@ public class SplashActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 显示土司
+     *
+     * @param e                 异常
+     * @param sharedPreferences SharedPreferences
+     */
     private void showAndToastAlertDialog(Throwable e, SharedPreferences sharedPreferences) {
         String msg;
         if ("".equals(e.getMessage())) {
@@ -133,6 +149,11 @@ public class SplashActivity extends AppCompatActivity {
         showSetBaseUrlAlertDialog(sharedPreferences);
     }
 
+    /**
+     * 显示BASE_URL设置弹窗
+     *
+     * @param sharedPreferences SharedPreferences
+     */
     private void showSetBaseUrlAlertDialog(SharedPreferences sharedPreferences) {
         AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setTitle("设置")

@@ -56,11 +56,19 @@ import static top.itning.smpandroid.util.DateUtils.MMDDHHMME_DATE_TIME_FORMATTER
 import static top.itning.smpandroid.util.DateUtils.ZONE_ID;
 
 /**
+ * 主活动
+ *
  * @author itning
  */
 public class MainActivity extends AppCompatActivity implements StudentClassUserRecyclerViewAdapter.OnItemClickListener<StudentClassUser> {
     private static final String TAG = "MainActivity";
+    /**
+     * 应用设置界面请求码
+     */
     private static final int SETTING_REQUEST_CODE = 104;
+    /**
+     * 必须权限申请请求码
+     */
     private static final int MUST_PERMISSIONS_REQUEST_CODE = 100;
     @BindView(R2.id.tv_hello)
     TextView helloTextView;
@@ -72,16 +80,33 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
     CoordinatorLayout coordinatorLayout;
     @BindView(R2.id.recycler_view)
     RecyclerView rv;
+    /**
+     * 文本输入布局实例
+     */
     @Nullable
     private TextInputLayout textInputLayout = null;
+    /**
+     * 资源
+     */
     @Nullable
     private Disposable titleDisposable;
+    /**
+     * 资源
+     */
     @Nullable
     private Disposable recyclerViewDataDisposable;
-    private List<StudentClassUser> studentClassUserList;
-    private Page<StudentClassUser> studentClassUserPage;
+    /**
+     * 资源
+     */
     private Disposable joinDisposable;
-
+    /**
+     * 学生班级用户集合
+     */
+    private List<StudentClassUser> studentClassUserList;
+    /**
+     * 学生班级用户分页
+     */
+    private Page<StudentClassUser> studentClassUserPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,12 +117,18 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
         initView();
     }
 
+    /**
+     * 初始化视图
+     */
     private void initView() {
         initTitleView();
         initSwipeRefreshLayout();
         initRecyclerView();
     }
 
+    /**
+     * 初始化标题
+     */
     private void initTitleView() {
         final SharedPreferences preferences = getSharedPreferences(App.SHARED_PREFERENCES_OWN, Context.MODE_PRIVATE);
         titleDisposable = Observable
@@ -112,6 +143,9 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
                 }, throwable -> Log.e(TAG, "title view error", throwable));
     }
 
+    /**
+     * 初始化下拉刷新
+     */
     private void initSwipeRefreshLayout() {
         swipeRefreshLayout.setColorSchemeResources(
                 R.color.colorPrimary, R.color.colorAccent, R.color.class_color_1,
@@ -121,6 +155,9 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
         swipeRefreshLayout.setOnRefreshListener(() -> initRecyclerViewData(true, PageUtils.DEFAULT_PAGE, PageUtils.DEFAULT_SIZE));
     }
 
+    /**
+     * 初始化RecyclerView
+     */
     private void initRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         rv.setLayoutManager(layoutManager);
@@ -136,6 +173,13 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
         initRecyclerViewData(true, PageUtils.DEFAULT_PAGE, PageUtils.DEFAULT_SIZE);
     }
 
+    /**
+     * 初始化RecyclerView数据
+     *
+     * @param clear 清理集合
+     * @param page  分页
+     * @param size  数量
+     */
     private void initRecyclerViewData(boolean clear, @Nullable Integer page, @Nullable Integer size) {
         swipeRefreshLayout.setRefreshing(true);
         recyclerViewDataDisposable = HttpHelper.get(ClassClient.class)
@@ -165,6 +209,11 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
 
     }
 
+    /**
+     * 按钮点击事件处理
+     *
+     * @param view View
+     */
     public void onShadowClick(View view) {
         switch (view.getId()) {
             case R.id.btn_room: {
@@ -203,7 +252,12 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
         }
     }
 
-    public void onFabClick(View view) {
+    /**
+     * 加入班级
+     *
+     * @param view View
+     */
+    public void onJoinClassClick(View view) {
         AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setTitle("加入班级")
                 .setCancelable(false)
@@ -234,6 +288,11 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
         }
     }
 
+    /**
+     * 网络请求加入班级
+     *
+     * @param classNum 班号
+     */
     private void doJoinClass(String classNum) {
         joinDisposable = HttpHelper.get(ClassClient.class)
                 .joinClass(classNum)

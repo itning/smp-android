@@ -61,6 +61,8 @@ import static top.itning.smpandroid.util.DateUtils.YYYYMMDD_DATE_TIME_FORMATTER_
 import static top.itning.smpandroid.util.DateUtils.ZONE_ID;
 
 /**
+ * 请假
+ *
  * @author itning
  */
 public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecyclerViewAdapter.OnItemClickListener<Leave>, View.OnClickListener, DatePickerDialog.OnDateSetListener, AdapterView.OnItemSelectedListener, TextView.OnEditorActionListener {
@@ -73,23 +75,53 @@ public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecy
     RecyclerView rv;
     @BindView(R2.id.cl_content)
     CoordinatorLayout coordinatorLayout;
+    /**
+     * 请假集合
+     */
     private List<Leave> leaveList;
+    /**
+     * 请假分页
+     */
     @Nullable
     private Page<Leave> leavePage;
+    /**
+     * 资源
+     */
     @Nullable
     private Disposable disposable;
+    /**
+     * 资源
+     */
     @Nullable
     private Disposable newReasonDisposable;
+    /**
+     * 资源
+     */
     @Nullable
     private Disposable newLeaveDisposable;
+    /**
+     * 请假实体
+     */
     @Nullable
     private Leave leave;
+    /**
+     * 请假开始
+     */
     @Nullable
     private TextView startTextView;
+    /**
+     * 请假结束
+     */
     @Nullable
     private TextView endTextView;
+    /**
+     * 新请假文本输入布局
+     */
     @Nullable
     private TextInputLayout newLeaveReasonViewTextInputLayout;
+    /**
+     * 创建请假信息Dialog
+     */
     @Nullable
     private BottomSheetDialog newLeaveDialog;
 
@@ -217,7 +249,7 @@ public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecy
      *
      * @param view View
      */
-    public void onFabClick(View view) {
+    public void onCreateNewLeaveClick(View view) {
         leave = new Leave();
         newLeaveDialog = new BottomSheetDialog(this);
         @SuppressLint("InflateParams") View newLeaveReasonView = getLayoutInflater().inflate(R.layout.alert_leave_new, null);

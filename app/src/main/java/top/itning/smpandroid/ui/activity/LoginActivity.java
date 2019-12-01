@@ -42,6 +42,8 @@ import top.itning.smpandroid.entity.Wrap;
 import top.itning.smpandroid.ui.view.CustomVideoView;
 
 /**
+ * 登录
+ *
  * @author itning
  */
 public class LoginActivity extends AppCompatActivity {
@@ -54,6 +56,9 @@ public class LoginActivity extends AppCompatActivity {
     TextInputLayout usernameLayout;
     @BindView(R2.id.tl_password)
     TextInputLayout passwordLayout;
+    /**
+     * 资源
+     */
     private Disposable disposable;
 
     @Override
@@ -66,6 +71,9 @@ public class LoginActivity extends AppCompatActivity {
         initView();
     }
 
+    /**
+     * 初始化视图
+     */
     private void initView() {
         passwordLayout.setEndIconMode(TextInputLayout.END_ICON_PASSWORD_TOGGLE);
         EditText usernameLayoutEditText = usernameLayout.getEditText();

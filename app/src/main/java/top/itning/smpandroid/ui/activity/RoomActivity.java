@@ -53,12 +53,23 @@ import top.itning.smpandroid.util.DateUtils;
 import top.itning.smpandroid.util.PageUtils;
 
 /**
+ * 寝室
+ *
  * @author itning
  */
 public class RoomActivity extends AppCompatActivity {
     private static final String TAG = "RoomActivity";
+    /**
+     * 人脸识别Activity请求码
+     */
     public static final int START_FACE_ACTIVITY_REQUEST_CODE = 105;
+    /**
+     * 数字格式化
+     */
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.000");
+    /**
+     * 高德地图客户端实例
+     */
     private AMapLocationClient locationClient = null;
     @BindView(R2.id.tv_address)
     AppCompatTextView addressTextView;
@@ -74,18 +85,46 @@ public class RoomActivity extends AppCompatActivity {
     CoordinatorLayout coordinatorLayout;
     @BindView(R2.id.tv_last_check_time)
     TextView lastCheckTimeTextView;
+    /**
+     * 学生寝室打卡信息集合
+     */
     private List<StudentRoomCheck> studentRoomCheckList;
-    @Nullable
-    private Disposable disposable;
+    /**
+     * 学生寝室打卡信息分页
+     */
     @Nullable
     private Page<StudentRoomCheck> studentRoomCheckPage;
+    /**
+     * 资源
+     */
+    @Nullable
+    private Disposable disposable;
+
+    /**
+     * 资源
+     */
     @Nullable
     private Disposable allowCheckDisposable;
+    /**
+     * 资源
+     */
     @Nullable
     private Disposable uploadCheckInfoDisposable;
+    /**
+     * 经度
+     */
     private double longitude = 0;
+    /**
+     * 纬度
+     */
     private double latitude = 0;
+    /**
+     * 动画
+     */
     private ObjectAnimator alphaAnimator1;
+    /**
+     * 动画
+     */
     private ObjectAnimator alphaAnimator2;
 
 
@@ -98,6 +137,9 @@ public class RoomActivity extends AppCompatActivity {
         initLocation();
     }
 
+    /**
+     * 初始化地理信息
+     */
     private void initLocation() {
         AMapLocationClient.setApiKey("d4be613647d43ff91487e2ef7d11ce79");
         locationClient = new AMapLocationClient(getApplicationContext());
@@ -151,6 +193,9 @@ public class RoomActivity extends AppCompatActivity {
         locationClient.startLocation();
     }
 
+    /**
+     * 初始化视图
+     */
     private void initView() {
         initToolBar();
         initSwipeRefreshLayout();
@@ -158,6 +203,9 @@ public class RoomActivity extends AppCompatActivity {
         initShadowViewAnimator();
     }
 
+    /**
+     * 初始化工具栏
+     */
     private void initToolBar() {
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -167,6 +215,9 @@ public class RoomActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 初始化RecyclerView
+     */
     private void initRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         rv.setLayoutManager(layoutManager);
@@ -182,6 +233,13 @@ public class RoomActivity extends AppCompatActivity {
         initRecyclerViewData(true, PageUtils.DEFAULT_PAGE, PageUtils.DEFAULT_SIZE);
     }
 
+    /**
+     * 初始化RecyclerView数据
+     *
+     * @param clear 清理集合
+     * @param page  页码
+     * @param size  每页数量
+     */
     private void initRecyclerViewData(boolean clear, @Nullable Integer page, @Nullable Integer size) {
         swipeRefreshLayout.setRefreshing(true);
         disposable = HttpHelper
@@ -212,12 +270,21 @@ public class RoomActivity extends AppCompatActivity {
                         }));
     }
 
+    /**
+     * 设置最后寝室打卡新
+     *
+     * @param page             页码
+     * @param studentRoomCheck 学生寝室打卡
+     */
     private void setLastCheckTimeTextView(@Nullable Integer page, StudentRoomCheck studentRoomCheck) {
         if (page == null || page == 0) {
             lastCheckTimeTextView.setText(DateUtils.format(studentRoomCheck.getCheckTime(), DateUtils.YYYYMMDDHHMM_DATE_TIME_FORMATTER_3));
         }
     }
 
+    /**
+     * 初始化下拉刷新
+     */
     private void initSwipeRefreshLayout() {
         swipeRefreshLayout.setColorSchemeResources(
                 R.color.colorPrimary, R.color.colorAccent, R.color.class_color_1,
@@ -227,6 +294,9 @@ public class RoomActivity extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(() -> initRecyclerViewData(true, PageUtils.DEFAULT_PAGE, PageUtils.DEFAULT_SIZE));
     }
 
+    /**
+     * 初始化动画
+     */
     private void initShadowViewAnimator() {
         int c1 = ContextCompat.getColor(this, R.color.class_color_1);
         int c2 = ContextCompat.getColor(this, R.color.class_color_2);
@@ -308,7 +378,12 @@ public class RoomActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    public void onShadowClick(View view) {
+    /**
+     * 寝室打卡按钮点击事件处理
+     *
+     * @param view View
+     */
+    public void onRoomCheckClick(View view) {
         allowCheckDisposable = HttpHelper.get(RoomClient.class)
                 .allowCheck()
                 .subscribeOn(Schedulers.computation())
@@ -349,6 +424,11 @@ public class RoomActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    /**
+     * 上传打卡信息
+     *
+     * @param file 文件
+     */
     @SuppressWarnings("deprecation")
     private void uploadCheckInfo(@NonNull File file) {
         ProgressDialog progressDialog = new ProgressDialog(this);

@@ -51,14 +51,28 @@ import top.itning.smpandroid.R2;
 import top.itning.smpandroid.util.CameraUtils;
 
 /**
+ * 人脸识别
+ *
  * @author itning
  */
 @SuppressWarnings("deprecation")
 public class FaceActivity extends AppCompatActivity {
     private static final String TAG = "FaceActivity";
+    /**
+     * 人脸识别 检测视频流中的对象
+     */
     private static final CascadeClassifier CASCADE_CLASSIFIER = new CascadeClassifier();
+    /**
+     * 颜色通道
+     */
     private static final Scalar SCALAR = new Scalar(0, 255);
+    /**
+     * 摄像头预览回调
+     */
     private final Camera.PreviewCallback previewCallback;
+    /**
+     * 摄像头实例
+     */
     private Camera camera;
     @BindView(R2.id.sv)
     SurfaceView surfaceView;
@@ -76,6 +90,9 @@ public class FaceActivity extends AppCompatActivity {
         init();
     }
 
+    /**
+     * 初始化资源和视图
+     */
     private void init() {
         checkHasFrontFaceCamera();
         initHaarcascadesData();
@@ -96,6 +113,9 @@ public class FaceActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 初始化视图
+     */
     private void initView() {
         SurfaceHolder holder = surfaceView.getHolder();
         holder.addCallback(new SurfaceHolder.Callback() {
@@ -147,11 +167,17 @@ public class FaceActivity extends AppCompatActivity {
                 Toast.makeText(this, "初始化模型数据异常", Toast.LENGTH_LONG).show();
             }
         }
+        // 加载.xml分类器文件
         CASCADE_CLASSIFIER.load(targetFile.getPath());
         Toast.makeText(this, "加载模型数据成功", Toast.LENGTH_SHORT).show();
     }
 
-    public void handleBtnClick(View view) {
+    /**
+     * 处理打卡按钮打卡事件
+     *
+     * @param view View
+     */
+    public void handleCheckBtnClick(View view) {
         camera.autoFocus((success, camera) -> {
             if (success) {
                 camera.setOneShotPreviewCallback(previewCallback);
@@ -163,6 +189,9 @@ public class FaceActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * 预览回调实现
+     */
     static class PreviewCallbackImpl implements Camera.PreviewCallback {
         private ObservableEmitter<byte[]> observableEmitter;
         private Camera camera;
@@ -248,6 +277,11 @@ public class FaceActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    /**
+     * 土司
+     *
+     * @param msg 消息
+     */
     private void makeToast(@NonNull String msg) {
         runOnUiThread(() -> Toast.makeText(FaceActivity.this, msg, Toast.LENGTH_LONG).show());
     }

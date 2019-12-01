@@ -19,6 +19,8 @@ import top.itning.smpandroid.R2;
 import top.itning.smpandroid.client.http.HttpHelper;
 
 /**
+ * 个人中心
+ *
  * @author itning
  */
 public class PersonalActivity extends AppCompatActivity {
@@ -33,10 +35,16 @@ public class PersonalActivity extends AppCompatActivity {
         initView();
     }
 
+    /**
+     * 初始化视图
+     */
     private void initView() {
         initToolBar();
     }
 
+    /**
+     * 初始化工具栏
+     */
     private void initToolBar() {
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -55,6 +63,11 @@ public class PersonalActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * 注销登录按钮事件处理
+     *
+     * @param view View
+     */
     public void handleLogoutBtnClick(View view) {
         if (getSharedPreferences(App.SHARED_PREFERENCES_OWN, Context.MODE_PRIVATE).edit().remove(HttpHelper.TOKEN_KEY).commit()) {
             Intent intent = new Intent(this, LoginActivity.class);

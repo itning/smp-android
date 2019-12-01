@@ -54,11 +54,19 @@ import top.itning.smpandroid.util.DateUtils;
 import top.itning.smpandroid.util.PageUtils;
 
 /**
+ * 班级签到
+ *
  * @author itning
  */
 public class ClassCheckActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener {
     private final static String TAG = "ClassCheckActivity";
+    /**
+     * 数字格式化
+     */
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.000");
+    /**
+     * 高德地图客户端实例
+     */
     private AMapLocationClient locationClient = null;
     @BindView(R2.id.tv_address)
     AppCompatTextView addressTextView;
@@ -74,21 +82,54 @@ public class ClassCheckActivity extends AppCompatActivity implements Toolbar.OnM
     ShadowView shadowView;
     @BindView(R2.id.tv_last_check_time)
     TextView lastCheckTimeTextView;
+    /**
+     * 学生班级用户
+     */
     @Nullable
     private StudentClassUser studentClassUserFromIntent;
+    /**
+     * 动画
+     */
     private ObjectAnimator alphaAnimator1;
+    /**
+     * 动画
+     */
     private ObjectAnimator alphaAnimator2;
+    /**
+     * 学生班级打卡集合
+     */
     private List<StudentClassCheck> studentClassCheckList;
+    /**
+     * 学生班级打卡分页
+     */
     private Page<StudentClassCheck> studentClassCheckPage;
+    /**
+     * 资源
+     */
     @Nullable
     private Disposable initRecyclerViewDataDisposable;
+    /**
+     * 资源
+     */
     @Nullable
     private Disposable canCheckDisposable;
+    /**
+     * 资源
+     */
     @Nullable
     private Disposable checkDisposable;
-    private double longitude = 0;
-    private double latitude = 0;
+    /**
+     * 资源
+     */
     private Disposable quitClassDisposable;
+    /**
+     * 经度
+     */
+    private double longitude = 0;
+    /**
+     * 纬度
+     */
+    private double latitude = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +141,9 @@ public class ClassCheckActivity extends AppCompatActivity implements Toolbar.OnM
         initLocation();
     }
 
+    /**
+     * 初始化地理信息
+     */
     private void initLocation() {
         AMapLocationClient.setApiKey("d4be613647d43ff91487e2ef7d11ce79");
         locationClient = new AMapLocationClient(getApplicationContext());
@@ -153,6 +197,9 @@ public class ClassCheckActivity extends AppCompatActivity implements Toolbar.OnM
         locationClient.startLocation();
     }
 
+    /**
+     * 初始化视图
+     */
     private void initView() {
         initToolBar();
         initSwipeRefreshLayout();
@@ -160,6 +207,9 @@ public class ClassCheckActivity extends AppCompatActivity implements Toolbar.OnM
         initShadowViewAnimator();
     }
 
+    /**
+     * 初始化工具栏
+     */
     private void initToolBar() {
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -170,6 +220,9 @@ public class ClassCheckActivity extends AppCompatActivity implements Toolbar.OnM
         toolbar.setOnMenuItemClickListener(this);
     }
 
+    /**
+     * 初始化RecyclerView
+     */
     private void initRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         rv.setLayoutManager(layoutManager);
@@ -185,6 +238,13 @@ public class ClassCheckActivity extends AppCompatActivity implements Toolbar.OnM
         initRecyclerViewData(true, PageUtils.DEFAULT_PAGE, PageUtils.DEFAULT_SIZE);
     }
 
+    /**
+     * 初始化RecyclerView数据
+     *
+     * @param clear 是否清理集合
+     * @param page  页码
+     * @param size  每页数量
+     */
     private void initRecyclerViewData(boolean clear, @Nullable Integer page, @Nullable Integer size) {
         if (studentClassUserFromIntent == null) {
             Snackbar.make(coordinatorLayout, "获取数据失败", Snackbar.LENGTH_LONG).show();
@@ -217,12 +277,21 @@ public class ClassCheckActivity extends AppCompatActivity implements Toolbar.OnM
                         }));
     }
 
+    /**
+     * 设置最后打卡信息
+     *
+     * @param page              页数
+     * @param studentClassCheck 学生打卡
+     */
     private void setLastCheckTimeTextView(@Nullable Integer page, StudentClassCheck studentClassCheck) {
         if (page == null || page == 0) {
             lastCheckTimeTextView.setText(DateUtils.format(studentClassCheck.getCheckTime(), DateUtils.YYYYMMDDHHMM_DATE_TIME_FORMATTER_3));
         }
     }
 
+    /**
+     * 初始化下拉刷新
+     */
     private void initSwipeRefreshLayout() {
         swipeRefreshLayout.setColorSchemeResources(
                 R.color.colorPrimary, R.color.colorAccent, R.color.class_color_1,
@@ -232,6 +301,9 @@ public class ClassCheckActivity extends AppCompatActivity implements Toolbar.OnM
         swipeRefreshLayout.setOnRefreshListener(() -> initRecyclerViewData(true, PageUtils.DEFAULT_PAGE, PageUtils.DEFAULT_SIZE));
     }
 
+    /**
+     * 初始化动画
+     */
     private void initShadowViewAnimator() {
         int c1 = ContextCompat.getColor(this, R.color.class_color_1);
         int c2 = ContextCompat.getColor(this, R.color.class_color_2);
@@ -322,7 +394,12 @@ public class ClassCheckActivity extends AppCompatActivity implements Toolbar.OnM
         return super.onOptionsItemSelected(item);
     }
 
-    public void onShadowClick(View view) {
+    /**
+     * 课堂签到按钮点击事件处理
+     *
+     * @param view View
+     */
+    public void onClassCheckClick(View view) {
         if (studentClassUserFromIntent == null) {
             Snackbar.make(coordinatorLayout, "无法签到，获取班级信息失败", Snackbar.LENGTH_LONG).show();
             return;
@@ -345,6 +422,9 @@ public class ClassCheckActivity extends AppCompatActivity implements Toolbar.OnM
                         }));
     }
 
+    /**
+     * 网络请求课堂签到
+     */
     @SuppressWarnings("deprecation")
     private void doClassCheck() {
         if (studentClassUserFromIntent == null) {

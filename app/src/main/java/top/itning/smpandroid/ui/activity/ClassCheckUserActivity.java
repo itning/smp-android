@@ -31,6 +31,8 @@ import top.itning.smpandroid.entity.StudentClassUser;
 import top.itning.smpandroid.ui.adapter.StudentCheckDetailRecyclerViewDataAdapter;
 
 /**
+ * 班级签到用户
+ *
  * @author itning
  */
 public class ClassCheckUserActivity extends AppCompatActivity {
@@ -43,8 +45,17 @@ public class ClassCheckUserActivity extends AppCompatActivity {
     @BindView(R2.id.srl)
     SwipeRefreshLayout swipeRefreshLayout;
 
+    /**
+     * 学生班级用户
+     */
     private StudentClassUser studentClassUser;
+    /**
+     * 资源
+     */
     private Disposable userCheckDetailDisposable;
+    /**
+     * 学生班级打卡DTO集合
+     */
     private List<StudentClassCheckDTO> studentClassCheckDtoList;
 
     @Override
@@ -56,6 +67,9 @@ public class ClassCheckUserActivity extends AppCompatActivity {
         initView();
     }
 
+    /**
+     * 初始化视图
+     */
     private void initView() {
         initToolBar();
         if (studentClassUser == null) {
@@ -66,6 +80,9 @@ public class ClassCheckUserActivity extends AppCompatActivity {
         initRecyclerView();
     }
 
+    /**
+     * 初始化下拉刷新
+     */
     private void initSwipeRefreshLayout() {
         swipeRefreshLayout.setColorSchemeResources(
                 R.color.colorPrimary, R.color.colorAccent, R.color.class_color_1,
@@ -75,6 +92,9 @@ public class ClassCheckUserActivity extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(this::initRecyclerViewData);
     }
 
+    /**
+     * 初始化RecyclerView
+     */
     private void initRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         rv.setLayoutManager(layoutManager);
@@ -83,6 +103,9 @@ public class ClassCheckUserActivity extends AppCompatActivity {
         initRecyclerViewData();
     }
 
+    /**
+     * 初始化RecyclerView数据
+     */
     private void initRecyclerViewData() {
         swipeRefreshLayout.setRefreshing(true);
         userCheckDetailDisposable = HttpHelper.get(ClassClient.class)
@@ -104,6 +127,9 @@ public class ClassCheckUserActivity extends AppCompatActivity {
                         }));
     }
 
+    /**
+     * 初始化工具栏
+     */
     private void initToolBar() {
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
