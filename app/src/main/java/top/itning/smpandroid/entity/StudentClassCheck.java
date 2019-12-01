@@ -7,7 +7,7 @@ import lombok.Data;
 
 /**
  * 学生课堂签到
- * 每个群组的签到信息
+ * 每个班级的签到信息
  *
  * @author itning
  */
@@ -22,7 +22,7 @@ public class StudentClassCheck implements Serializable {
      */
     private User user;
     /**
-     * 所属群组
+     * 所属班级
      */
     private StudentClass studentClass;
     /**

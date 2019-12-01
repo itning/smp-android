@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
 
     public void onFabClick(View view) {
         AlertDialog alertDialog = new AlertDialog.Builder(this)
-                .setTitle("加入群组")
+                .setTitle("加入班级")
                 .setCancelable(false)
                 .setView(R.layout.alert_join_class)
                 .setNegativeButton("加入", (dialog, which) -> {

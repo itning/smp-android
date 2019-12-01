@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.Toolbar;
@@ -307,7 +308,7 @@ public class ClassCheckActivity extends AppCompatActivity implements Toolbar.OnM
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_group, menu);
+        getMenuInflater().inflate(R.menu.menu_class, menu);
         return true;
     }
 
@@ -381,35 +382,42 @@ public class ClassCheckActivity extends AppCompatActivity implements Toolbar.OnM
     @SuppressWarnings("deprecation")
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        if (item.getItemId() == R.id.item_exit_group) {
+        if (item.getItemId() == R.id.item_exit_class) {
             if (studentClassUserFromIntent == null) {
                 Snackbar.make(coordinatorLayout, "班级信息异常", Snackbar.LENGTH_LONG).show();
                 return false;
             }
-            ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setMessage("请稍后");
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-            quitClassDisposable = HttpHelper.get(ClassClient.class)
-                    .quitClass(studentClassUserFromIntent.getStudentClass().getId())
-                    .subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(noContent -> {
-                        App.needRefreshStudentClassUserData = true;
-                        progressDialog.dismiss();
-                        Toast.makeText(this, "退出成功", Toast.LENGTH_LONG).show();
-                        onBackPressed();
-                    }, HttpHelper.ErrorInvoke.get(this)
-                            .before(t -> progressDialog.dismiss())
-                            .orElseCode(t -> {
-                                String msg = t.getT2() != null ? t.getT2().getMsg() : t.getT1().code() + "";
-                                Snackbar.make(coordinatorLayout, msg, Snackbar.LENGTH_LONG).show();
-                            })
-                            .orElseException(t -> {
-                                Log.w(TAG, "网络请求错误", t);
-                                Snackbar.make(coordinatorLayout, "网络请求错误", Snackbar.LENGTH_LONG).show();
-                            }));
+            new AlertDialog.Builder(this)
+                    .setTitle("确定退出？")
+                    .setCancelable(false)
+                    .setNegativeButton("确定", (dialog, which) -> {
+                        ProgressDialog progressDialog = new ProgressDialog(this);
+                        progressDialog.setMessage("请稍后");
+                        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                        progressDialog.setCancelable(false);
+                        progressDialog.show();
+                        quitClassDisposable = HttpHelper.get(ClassClient.class)
+                                .quitClass(studentClassUserFromIntent.getStudentClass().getId())
+                                .subscribeOn(Schedulers.computation())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(noContent -> {
+                                    App.needRefreshStudentClassUserData = true;
+                                    progressDialog.dismiss();
+                                    Toast.makeText(this, "退出成功", Toast.LENGTH_LONG).show();
+                                    onBackPressed();
+                                }, HttpHelper.ErrorInvoke.get(this)
+                                        .before(t -> progressDialog.dismiss())
+                                        .orElseCode(t -> {
+                                            String msg = t.getT2() != null ? t.getT2().getMsg() : t.getT1().code() + "";
+                                            Snackbar.make(coordinatorLayout, msg, Snackbar.LENGTH_LONG).show();
+                                        })
+                                        .orElseException(t -> {
+                                            Log.w(TAG, "网络请求错误", t);
+                                            Snackbar.make(coordinatorLayout, "网络请求错误", Snackbar.LENGTH_LONG).show();
+                                        }));
+                    })
+                    .setPositiveButton("取消", null)
+                    .show();
             return true;
         }
         return false;

@@ -17,7 +17,7 @@ public class StudentClass implements Serializable {
      */
     private String id;
     /**
-     * 群组名
+     * 班级名
      */
     private String name;
     /**
