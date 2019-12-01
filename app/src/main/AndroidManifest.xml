@@ -48,6 +48,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".ui.activity.ClassCheckUserActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.activity.LeaveActivity"
             android:screenOrientation="portrait" />
         <activity

@@ -6,20 +6,26 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * 角色
- *
  * @author itning
  */
 @Data
-public class Role implements Serializable {
+public class StudentClassCheckDTO implements Serializable {
     /**
-     * 角色ID
+     * 学生 ID
      */
-    private String id;
+    private User user;
     /**
-     * 角色名
+     * 班级 ID
      */
-    private String name;
+    private StudentClass studentClass;
+    /**
+     * 该学生是否签到了
+     */
+    private Boolean check;
+    /**
+     * 签到时间
+     */
+    private Date checkTime;
     /**
      * 创建时间
      */

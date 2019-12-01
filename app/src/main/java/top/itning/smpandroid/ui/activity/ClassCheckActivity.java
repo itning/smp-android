@@ -3,6 +3,7 @@ package top.itning.smpandroid.ui.activity;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -418,6 +419,12 @@ public class ClassCheckActivity extends AppCompatActivity implements Toolbar.OnM
                     })
                     .setPositiveButton("取消", null)
                     .show();
+            return true;
+        }
+        if (item.getItemId() == R.id.item_check_history && studentClassUserFromIntent != null) {
+            Intent intent = new Intent(this, ClassCheckUserActivity.class);
+            intent.putExtra("data", studentClassUserFromIntent);
+            startActivity(intent);
             return true;
         }
         return false;

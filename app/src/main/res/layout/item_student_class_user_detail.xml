@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:foreground="?attr/selectableItemBackground">
+
+    <LinearLayout
+        android:id="@+id/ll_round"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="20dp">
+
+        <top.itning.smpandroid.ui.view.RoundBackChange
+            android:id="@+id/round"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:scaleType="centerInside"
+            app:self_color="@color/colorAccent" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="20dp"
+        android:layout_toEndOf="@id/ll_round">
+
+        <TextView
+            android:id="@+id/tv_check_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="2016-11-30 14:32:32" />
+
+        <TextView
+            android:id="@+id/tv_check_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="20dp"
+            tools:ignore="RelativeOverlap"
+            tools:text="已签到" />
+    </RelativeLayout>
+</RelativeLayout>

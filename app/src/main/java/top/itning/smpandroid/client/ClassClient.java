@@ -1,5 +1,7 @@
 package top.itning.smpandroid.client;
 
+import java.util.List;
+
 import io.reactivex.Observable;
 import retrofit2.Response;
 import retrofit2.http.Field;
@@ -11,6 +13,7 @@ import retrofit2.http.Query;
 import top.itning.smpandroid.client.http.Page;
 import top.itning.smpandroid.client.http.RestModel;
 import top.itning.smpandroid.entity.StudentClassCheck;
+import top.itning.smpandroid.entity.StudentClassCheckDTO;
 import top.itning.smpandroid.entity.StudentClassUser;
 
 /**
@@ -78,4 +81,14 @@ public interface ClassClient {
     @FormUrlEncoded
     @POST("/class/quit_class")
     Observable<Response<Object>> quitClass(@Field("studentClassId") String studentClassId);
+
+    /**
+     * 获取签到信息
+     *
+     * @param studentUserName 学生用户名
+     * @param studentClassId  班级ID
+     * @return 签到信息
+     */
+    @GET("/class/user_check_detail")
+    Observable<RestModel<List<StudentClassCheckDTO>>> getUserCheckDetail(@Query("studentUserName") String studentUserName, @Query("studentClassId") String studentClassId);
 }

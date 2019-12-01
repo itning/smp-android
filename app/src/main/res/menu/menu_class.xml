@@ -4,6 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="top.itning.smpandroid.ui.activity.ClassCheckActivity">
     <item
+        android:id="@+id/item_check_history"
+        android:title="签到历史"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/item_exit_class"
         android:title="退出班级"
         app:showAsAction="never" />
