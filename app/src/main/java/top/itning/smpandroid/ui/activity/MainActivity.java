@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements StudentClassUserR
         AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setTitle("加入群组")
                 .setCancelable(false)
-                .setView(R.layout.alert_add_group)
+                .setView(R.layout.alert_join_class)
                 .setNegativeButton("加入", (dialog, which) -> {
                     if (textInputLayout != null) {
                         EditText editText = textInputLayout.getEditText();
