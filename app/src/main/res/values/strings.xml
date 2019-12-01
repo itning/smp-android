@@ -1,3 +1,27 @@
 <resources>
     <string name="app_name">学生管理平台</string>
+    <string name="class_check_title1">课堂签到</string>
+    <string name="class_check_title2">上次签到</string>
+    <string name="location_waiting">获取位置信息中…</string>
+    <string name="face_do_btn_str">点击打卡</string>
+    <string name="username_str">用户名</string>
+    <string name="password_hint_str">密码</string>
+    <string name="login_str">立即登录</string>
+    <string name="btn_room_str">我的寝室</string>
+    <string name="btn_leave_str">我的请假</string>
+    <string name="main_title_str">我加入的班级</string>
+    <string name="logout_btn_str">注销登录</string>
+    <string name="room_title1">寝室打卡</string>
+    <string name="room_title2">上次打卡</string>
+    <string name="init_base_url_hint_str">Base Url</string>
+    <string name="join_class_hint_str">请输入班号</string>
+    <string name="alert_leave_type_str">请假类型：</string>
+    <string name="alert_leave_start_time_str">开始日期：</string>
+    <string name="alert_leave_end_time_str">结束日期：</string>
+    <string name="alert_leave_reason_str">填写请假原因</string>
+    <string name="leave_reason_hint_str">添加评论</string>
+    <string name="room_check_ok_str">打卡成功</string>
+    <string name="class_check_ok_str">签到成功</string>
+    <string name="menu_check_history_str">签到历史</string>
+    <string name="menu_exit_class_str">退出班级</string>
 </resources>

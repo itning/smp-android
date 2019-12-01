@@ -152,6 +152,7 @@ public class LoginActivity extends AppCompatActivity {
      *
      * @param view View
      */
+    @SuppressWarnings("deprecation")
     public void handleLoginBtn(View view) {
         String username = "", password = "";
         EditText usernameLayoutEditText = usernameLayout.getEditText();

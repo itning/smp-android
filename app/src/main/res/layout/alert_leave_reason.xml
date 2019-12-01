@@ -32,7 +32,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="添加评论"
+                android:hint="@string/leave_reason_hint_str"
                 android:imeOptions="actionSend" />
         </com.google.android.material.textfield.TextInputLayout>
     </androidx.appcompat.widget.LinearLayoutCompat>

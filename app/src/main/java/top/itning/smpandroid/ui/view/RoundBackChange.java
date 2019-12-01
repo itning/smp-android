@@ -19,7 +19,7 @@ import top.itning.smpandroid.R;
  */
 public class RoundBackChange extends View {
     private int color = -0x22000001;
-    private Paint mPaint = new Paint();
+    private final Paint mPaint = new Paint();
 
     public RoundBackChange(Context context) {
         super(context);

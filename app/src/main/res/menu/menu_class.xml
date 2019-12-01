@@ -5,10 +5,10 @@
     tools:context="top.itning.smpandroid.ui.activity.ClassCheckActivity">
     <item
         android:id="@+id/item_check_history"
-        android:title="签到历史"
+        android:title="@string/menu_check_history_str"
         app:showAsAction="never" />
     <item
         android:id="@+id/item_exit_class"
-        android:title="退出班级"
+        android:title="@string/menu_exit_class_str"
         app:showAsAction="never" />
 </menu>

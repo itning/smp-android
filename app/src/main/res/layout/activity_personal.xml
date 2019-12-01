@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/colorAccent"
         android:onClick="handleLogoutBtnClick"
-        android:text="注销登录"
+        android:text="@string/logout_btn_str"
         android:textAppearance="?android:attr/textAppearanceLargeInverse"
         android:textSize="16sp"
         android:theme="@style/AppTheme" />

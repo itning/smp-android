@@ -39,7 +39,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="用户名"
+                android:hint="@string/username_str"
                 android:imeOptions="actionNext" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -53,7 +53,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="密码"
+                android:hint="@string/password_hint_str"
                 android:imeOptions="actionDone"
                 android:inputType="textPassword" />
 
@@ -65,7 +65,7 @@
             android:layout_marginTop="16dp"
             android:backgroundTint="@color/colorAccent"
             android:onClick="handleLoginBtn"
-            android:text="立即登录"
+            android:text="@string/login_str"
             android:textAppearance="?android:attr/textAppearanceLargeInverse"
             android:textSize="16sp"
             android:theme="@style/AppTheme" />

@@ -40,7 +40,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="0.5"
                 android:gravity="center_horizontal|bottom"
-                android:text="寝室打卡"
+                android:text="@string/room_title1"
                 android:textColor="#fff"
                 android:textSize="20sp" />
 
@@ -49,7 +49,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="0.25"
                 android:gravity="center"
-                android:text="上次打卡"
+                android:text="@string/room_title2"
                 android:textColor="#fff" />
 
             <TextView
@@ -68,7 +68,7 @@
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:gravity="center"
-        android:text="获取位置信息中..." />
+        android:text="@string/location_waiting" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/cl_content"

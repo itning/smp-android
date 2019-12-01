@@ -15,12 +15,14 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_hello"
-            android:layout_width="wrap_content"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginBottom="16dp"
+            android:autoSizeTextType="uniform"
+            android:maxLines="1"
             android:textColor="#000"
             android:textSize="20sp"
             tools:text="下午好，舒露" />
@@ -68,7 +70,7 @@
                 android:layout_height="48dp"
                 android:layout_marginEnd="44dp"
                 android:gravity="center"
-                android:text="我的寝室"
+                android:text="@string/btn_room_str"
                 android:textColor="#fff" />
         </com.loopeer.shadow.ShadowView>
 
@@ -93,7 +95,7 @@
                 android:layout_height="48dp"
                 android:layout_marginEnd="44dp"
                 android:gravity="center"
-                android:text="我的请假"
+                android:text="@string/btn_leave_str"
                 android:textColor="#fff" />
         </com.loopeer.shadow.ShadowView>
     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -102,7 +104,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="我加入的班级"
+        android:text="@string/main_title_str"
         android:textColor="#000"
         android:textSize="20sp" />
 
@@ -123,7 +125,6 @@
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"

@@ -24,7 +24,7 @@ import top.itning.smpandroid.util.DateUtils;
  */
 public class StudentClassCheckRecyclerViewAdapter extends RecyclerView.Adapter<StudentClassCheckRecyclerViewAdapter.ViewHolder> {
     private final List<StudentClassCheck> studentClassCheckList;
-    private Context context;
+    private final Context context;
     private final List<Integer> colorList = new ArrayList<>(7);
     private int nexIndex;
 

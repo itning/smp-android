@@ -42,7 +42,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="20dp"
-            android:text="打卡成功"
+            android:text="@string/room_check_ok_str"
             tools:ignore="RelativeOverlap" />
     </RelativeLayout>
 </RelativeLayout>

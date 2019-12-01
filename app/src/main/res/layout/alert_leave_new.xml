@@ -14,7 +14,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:text="请假类型："
+            android:text="@string/alert_leave_type_str"
             android:textColor="#000"
             android:textSize="16sp" />
 
@@ -32,7 +32,7 @@
             android:layout_below="@id/tv_leave_type_info"
             android:layout_marginStart="4dp"
             android:layout_marginTop="8dp"
-            android:text="开始日期："
+            android:text="@string/alert_leave_start_time_str"
             android:textColor="#000"
             android:textSize="16sp" />
 
@@ -56,7 +56,7 @@
             android:layout_below="@id/tv_start_time_info"
             android:layout_marginStart="4dp"
             android:layout_marginTop="8dp"
-            android:text="结束日期："
+            android:text="@string/alert_leave_end_time_str"
             android:textColor="#000"
             android:textSize="16sp" />
 
@@ -83,7 +83,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="填写请假原因"
+                android:hint="@string/alert_leave_reason_str"
                 android:imeOptions="actionSend" />
         </com.google.android.material.textfield.TextInputLayout>
     </RelativeLayout>
