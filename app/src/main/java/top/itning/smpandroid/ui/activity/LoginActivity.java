@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -17,16 +16,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
 
-import java.util.Date;
+import java.util.Optional;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,8 +34,9 @@ import top.itning.smpandroid.R2;
 import top.itning.smpandroid.client.SecurityClient;
 import top.itning.smpandroid.client.http.HttpHelper;
 import top.itning.smpandroid.entity.LoginUser;
-import top.itning.smpandroid.entity.Wrap;
+import top.itning.smpandroid.entity.Role;
 import top.itning.smpandroid.ui.view.CustomVideoView;
+import top.itning.smpandroid.util.UserUtils;
 
 /**
  * 登录
@@ -192,19 +189,9 @@ public class LoginActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(restModel -> {
-                    String token = restModel.getData();
-                    if (token != null && !"".equals(token.trim())) {
-                        SharedPreferences sharedPreferences = getSharedPreferences(App.SHARED_PREFERENCES_OWN, MODE_PRIVATE);
-                        if (sharedPreferences.edit().putString(HttpHelper.TOKEN_KEY, token).commit()) {
-                            setUserInfo(sharedPreferences);
-                            progressDialog.dismiss();
-                            startActivity(new Intent(this, MainActivity.class));
-                            finish();
-                            return;
-                        }
-                    }
                     progressDialog.dismiss();
-                    Toast.makeText(this, "登陆失败", Toast.LENGTH_LONG).show();
+                    String token = restModel.getData();
+                    doLogin(token);
                 }, HttpHelper.ErrorInvoke
                         .get(this)
                         .before(t -> progressDialog.dismiss())
@@ -216,22 +203,31 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * 登陆成功后设置用户信息
+     * 登录并解析保存用户信息
      *
-     * @param preferences SharedPreferences
+     * @param token TOKEN
      */
-    private void setUserInfo(@NonNull SharedPreferences preferences) {
-        try {
-            String json = new String(Base64.decode(preferences.getString(HttpHelper.TOKEN_KEY, "").split("\\.")[1], Base64.URL_SAFE));
-            Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json1, type, context) -> new Date(json1.getAsLong())).create();
-            Wrap wrap = gson.fromJson(json, Wrap.class);
-            LoginUser loginUser = gson.fromJson(wrap.getLoginUser(), LoginUser.class);
-            if (preferences.edit().putString(HttpHelper.LOGIN_USER_NAME_KEY, loginUser.getName()).commit()) {
-                Log.i(TAG, loginUser.toString());
+    private void doLogin(@Nullable String token) {
+        Optional<LoginUser> loginUserOptional = UserUtils.getLoginUser(token);
+        if (loginUserOptional.isPresent()) {
+            LoginUser loginUser = loginUserOptional.get();
+            if (loginUser.getRole().getId().equals(Role.STUDENT_ROLE_ID)) {
+                SharedPreferences sharedPreferences = getSharedPreferences(App.SHARED_PREFERENCES_OWN, MODE_PRIVATE);
+                if (sharedPreferences.edit()
+                        .putString(HttpHelper.TOKEN_KEY, token)
+                        .putString(HttpHelper.LOGIN_USER_NAME_KEY, loginUser.getName())
+                        .commit()) {
+                    startActivity(new Intent(this, MainActivity.class));
+                    finish();
+                } else {
+                    Toast.makeText(this, "保存用户信息失败", Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(this, "请使用学生账户进行登录", Toast.LENGTH_LONG).show();
             }
-        } catch (Exception e) {
-            Log.e(TAG, "", e);
-            Toast.makeText(this, "保存用户信息失败", Toast.LENGTH_LONG).show();
+        } else {
+            Log.d(TAG, "login fail and login user is null");
+            Toast.makeText(this, "登陆失败", Toast.LENGTH_LONG).show();
         }
     }
 

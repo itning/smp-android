@@ -12,6 +12,8 @@ import lombok.Data;
  */
 @Data
 public class Role implements Serializable {
+    public static final String STUDENT_ROLE_ID = "1";
+
     /**
      * 角色ID
      */
