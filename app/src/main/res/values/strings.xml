@@ -25,4 +25,6 @@
     <string name="menu_check_history_str">签到历史</string>
     <string name="menu_exit_class_str">退出班级</string>
     <string name="check_time_default_str">未知</string>
+    <string name="change_password">修改密码</string>
+    <string name="change_password_hint_str">新密码</string>
 </resources>

@@ -1,6 +1,7 @@
 package top.itning.smpandroid.client;
 
 import io.reactivex.Observable;
+import retrofit2.Response;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -21,6 +22,16 @@ public interface SecurityClient {
     @FormUrlEncoded
     @POST("/security/login")
     Observable<RestModel<String>> login(@Field("username") String username, @Field("password") String password);
+
+    /**
+     * 修改密码
+     *
+     * @param newPassword 新密码
+     * @return no content
+     */
+    @FormUrlEncoded
+    @POST("/security/change/password")
+    Observable<Response<Object>> changePassword(@Field("newPassword") String newPassword);
 
     /**
      * PING
