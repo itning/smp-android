@@ -44,4 +44,14 @@ public interface RoomClient {
     @Multipart
     @POST("/room/check")
     Observable<RestModel<StudentRoomCheck>> check(@Part MultipartBody.Part file, @Part("longitude") double longitude, @Part("latitude") double latitude);
+
+    /**
+     * 注册人脸数据
+     *
+     * @param file 图像
+     * @return Observable
+     */
+    @Multipart
+    @POST("/room/face/register")
+    Observable<RestModel<String>> registerFace(@Part MultipartBody.Part file);
 }

@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -23,15 +24,23 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.io.File;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import top.itning.smpandroid.R;
 import top.itning.smpandroid.R2;
+import top.itning.smpandroid.client.RoomClient;
 import top.itning.smpandroid.client.SecurityClient;
 import top.itning.smpandroid.client.http.HttpHelper;
+
+import static top.itning.smpandroid.ui.activity.RoomActivity.START_FACE_ACTIVITY_REQUEST_CODE;
 
 /**
  * 个人中心
@@ -48,6 +57,10 @@ public class PersonalActivity extends AppCompatActivity {
      * 资源
      */
     private Disposable pwdDisposable;
+    /**
+     * 资源
+     */
+    private Disposable uploadFaceInfoDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,6 +195,70 @@ public class PersonalActivity extends AppCompatActivity {
         if (pwdDisposable != null && !pwdDisposable.isDisposed()) {
             pwdDisposable.dispose();
         }
+        if (uploadFaceInfoDisposable != null && !uploadFaceInfoDisposable.isDisposed()) {
+            uploadFaceInfoDisposable.dispose();
+        }
         super.onDestroy();
+    }
+
+    /**
+     * 注册人脸按钮点击事件处理
+     *
+     * @param view View
+     */
+    public void handleRegisterFaceBtnClick(View view) {
+        startActivityForResult(new Intent(this, FaceActivity.class), START_FACE_ACTIVITY_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == START_FACE_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                if (data != null) {
+                    String pathName = data.getStringExtra("pathName");
+                    if (pathName != null) {
+                        File file = new File(pathName);
+                        if (file.exists() && file.canRead() && file.isFile()) {
+                            Log.d(TAG, file.getPath());
+                            uploadFaceInfo(file);
+                            return;
+                        }
+                    }
+                }
+                Toast.makeText(this, "注册失败", Toast.LENGTH_LONG).show();
+            } else if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(this, "取消注册", Toast.LENGTH_LONG).show();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    /**
+     * 上传人脸数据
+     *
+     * @param file 文件
+     */
+    @SuppressWarnings("deprecation")
+    private void uploadFaceInfo(File file) {
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("正在上传数据");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        RequestBody body = RequestBody.create(MediaType.parse("application/otcet-stream"), file);
+        MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), body);
+        uploadFaceInfoDisposable = HttpHelper.get(RoomClient.class)
+                .registerFace(part)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(studentRoomCheckRestModel -> {
+                    progressDialog.dismiss();
+                    Toast.makeText(this, "注册成功", Toast.LENGTH_LONG).show();
+                }, HttpHelper.ErrorInvoke.get(this)
+                        .before(t -> progressDialog.dismiss())
+                        .orElseException(t -> {
+                            Log.w(TAG, "网络请求错误", t);
+                            Toast.makeText(this, "网络请求错误", Toast.LENGTH_LONG).show();
+                        }));
     }
 }

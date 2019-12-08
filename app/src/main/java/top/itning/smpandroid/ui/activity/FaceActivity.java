@@ -26,9 +26,7 @@ import org.bytedeco.opencv.global.opencv_core;
 import org.bytedeco.opencv.global.opencv_imgcodecs;
 import org.bytedeco.opencv.global.opencv_imgproc;
 import org.bytedeco.opencv.opencv_core.Mat;
-import org.bytedeco.opencv.opencv_core.Point;
 import org.bytedeco.opencv.opencv_core.RectVector;
-import org.bytedeco.opencv.opencv_core.Scalar;
 import org.bytedeco.opencv.opencv_objdetect.CascadeClassifier;
 
 import java.io.ByteArrayOutputStream;
@@ -62,10 +60,6 @@ public class FaceActivity extends AppCompatActivity {
      * 人脸识别 检测视频流中的对象
      */
     private static final CascadeClassifier CASCADE_CLASSIFIER = new CascadeClassifier();
-    /**
-     * 颜色通道
-     */
-    private static final Scalar SCALAR = new Scalar(0, 255);
     /**
      * 摄像头预览回调
      */
@@ -232,10 +226,6 @@ public class FaceActivity extends AppCompatActivity {
                                 boolean saved = false;
                                 String pathName = activity.getExternalCacheDir() + "/" + System.currentTimeMillis() + ".jpg";
                                 if (rectVector.size() == 1) {
-                                    org.bytedeco.opencv.opencv_core.Rect rect = rectVector.get(0);
-                                    int x = rect.x();
-                                    int y = rect.y();
-                                    opencv_imgproc.rectangle(mat, new Point(x, y), new Point(x + rect.width(), y + rect.height()), SCALAR);
                                     opencv_imgcodecs.imwrite(new File(pathName).getPath(), mat);
                                     saved = true;
                                 }

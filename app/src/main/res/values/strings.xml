@@ -27,4 +27,5 @@
     <string name="check_time_default_str">未知</string>
     <string name="change_password">修改密码</string>
     <string name="change_password_hint_str">新密码</string>
+    <string name="register_face">注册人脸</string>
 </resources>

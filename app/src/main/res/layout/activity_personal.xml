@@ -17,6 +17,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/colorAccent"
+        android:onClick="handleRegisterFaceBtnClick"
+        android:text="@string/register_face"
+        android:textAppearance="?android:attr/textAppearanceLargeInverse"
+        android:textSize="16sp"
+        android:theme="@style/AppTheme" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorAccent"
         android:onClick="handleChangePwdBtnClick"
         android:text="@string/change_password"
         android:textAppearance="?android:attr/textAppearanceLargeInverse"
