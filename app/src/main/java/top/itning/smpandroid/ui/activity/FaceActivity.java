@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 
 import org.bytedeco.javacv.AndroidFrameConverter;
 import org.bytedeco.javacv.Frame;
@@ -70,6 +71,8 @@ public class FaceActivity extends AppCompatActivity {
     private Camera camera;
     @BindView(R2.id.sv)
     SurfaceView surfaceView;
+    @BindView(R2.id.btn_face)
+    AppCompatButton faceBtn;
 
     public FaceActivity() {
         previewCallback = new PreviewCallbackImpl(this);
@@ -88,6 +91,12 @@ public class FaceActivity extends AppCompatActivity {
      * 初始化资源和视图
      */
     private void init() {
+        String btnName = getIntent().getStringExtra("btnName");
+        if (btnName != null) {
+            faceBtn.setText(btnName);
+        } else {
+            faceBtn.setText(R.string.face_do_btn_str);
+        }
         checkHasFrontFaceCamera();
         initHaarcascadesData();
         initView();

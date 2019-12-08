@@ -207,7 +207,9 @@ public class PersonalActivity extends AppCompatActivity {
      * @param view View
      */
     public void handleRegisterFaceBtnClick(View view) {
-        startActivityForResult(new Intent(this, FaceActivity.class), START_FACE_ACTIVITY_REQUEST_CODE);
+        Intent intent = new Intent(this, FaceActivity.class);
+        intent.putExtra("btnName", "点击注册");
+        startActivityForResult(intent, START_FACE_ACTIVITY_REQUEST_CODE);
     }
 
     @Override

@@ -17,6 +17,7 @@
         android:src="@drawable/face" />
 
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_face"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
@@ -27,8 +28,8 @@
         android:paddingTop="16dp"
         android:paddingEnd="32dp"
         android:paddingBottom="16dp"
-        android:text="@string/face_do_btn_str"
         android:textAppearance="?android:attr/textAppearanceLargeInverse"
         android:textSize="16sp"
-        android:theme="@style/AppTheme" />
+        android:theme="@style/AppTheme"
+        tools:text="@string/face_do_btn_str" />
 </merge>
