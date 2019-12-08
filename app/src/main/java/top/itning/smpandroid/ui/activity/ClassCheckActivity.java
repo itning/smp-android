@@ -31,6 +31,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.snackbar.Snackbar;
 import com.loopeer.shadow.ShadowView;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,9 @@ import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import top.itning.smpandroid.R;
 import top.itning.smpandroid.R2;
 import top.itning.smpandroid.client.ClassClient;
@@ -52,6 +56,8 @@ import top.itning.smpandroid.ui.interpolator.BraetheInterpolator;
 import top.itning.smpandroid.ui.listener.AbstractLoadMoreListener;
 import top.itning.smpandroid.util.DateUtils;
 import top.itning.smpandroid.util.PageUtils;
+
+import static top.itning.smpandroid.ui.activity.RoomActivity.START_FACE_ACTIVITY_REQUEST_CODE;
 
 /**
  * 班级签到
@@ -413,7 +419,9 @@ public class ClassCheckActivity extends AppCompatActivity implements Toolbar.OnM
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(booleanRestModel -> {
                     if (booleanRestModel.getData()) {
-                        doClassCheck();
+                        Intent intent = new Intent(this, FaceActivity.class);
+                        intent.putExtra("btnName", "点击签到");
+                        startActivityForResult(intent, START_FACE_ACTIVITY_REQUEST_CODE);
                     } else {
                         Snackbar.make(coordinatorLayout, "教师未开启签到", Snackbar.LENGTH_LONG).show();
                     }
@@ -424,11 +432,34 @@ public class ClassCheckActivity extends AppCompatActivity implements Toolbar.OnM
                         }));
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == START_FACE_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                if (data != null) {
+                    String pathName = data.getStringExtra("pathName");
+                    if (pathName != null) {
+                        File file = new File(pathName);
+                        if (file.exists() && file.canRead() && file.isFile()) {
+                            Log.d(TAG, file.getPath());
+                            doClassCheck(file);
+                            return;
+                        }
+                    }
+                }
+                Snackbar.make(coordinatorLayout, "签到失败", Snackbar.LENGTH_LONG).show();
+            } else if (resultCode == RESULT_CANCELED) {
+                Snackbar.make(coordinatorLayout, "取消签到", Snackbar.LENGTH_LONG).show();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     /**
      * 网络请求课堂签到
      */
     @SuppressWarnings("deprecation")
-    private void doClassCheck() {
+    private void doClassCheck(File file) {
         if (studentClassUserFromIntent == null) {
             Snackbar.make(coordinatorLayout, "无法签到，获取班级信息失败", Snackbar.LENGTH_LONG).show();
             return;
@@ -438,8 +469,11 @@ public class ClassCheckActivity extends AppCompatActivity implements Toolbar.OnM
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
         progressDialog.show();
+        RequestBody studentClassId = RequestBody.create(MediaType.parse("text/plain"), studentClassUserFromIntent.getStudentClass().getId());
+        RequestBody body = RequestBody.create(MediaType.parse("application/otcet-stream"), file);
+        MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), body);
         checkDisposable = HttpHelper.get(ClassClient.class)
-                .check(longitude, latitude, studentClassUserFromIntent.getStudentClass().getId())
+                .check(part, longitude, latitude, studentClassId)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(studentClassCheckRestModel -> {

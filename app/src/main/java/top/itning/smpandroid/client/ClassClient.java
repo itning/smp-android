@@ -3,11 +3,15 @@ package top.itning.smpandroid.client;
 import java.util.List;
 
 import io.reactivex.Observable;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Response;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import top.itning.smpandroid.client.http.Page;
@@ -53,14 +57,18 @@ public interface ClassClient {
     /**
      * 学生课堂签到
      *
+     * @param file           文件
      * @param longitude      经度
      * @param latitude       纬度
      * @param studentClassId 课堂ID
      * @return 学生课堂签到
      */
-    @FormUrlEncoded
+    @Multipart
     @POST("/class/check")
-    Observable<RestModel<StudentClassCheck>> check(@Field("longitude") double longitude, @Field("latitude") double latitude, @Field("studentClassId") String studentClassId);
+    Observable<RestModel<StudentClassCheck>> check(@Part MultipartBody.Part file,
+                                                   @Part("longitude") double longitude,
+                                                   @Part("latitude") double latitude,
+                                                   @Part("studentClassId") RequestBody studentClassId);
 
     /**
      * 加入班级
