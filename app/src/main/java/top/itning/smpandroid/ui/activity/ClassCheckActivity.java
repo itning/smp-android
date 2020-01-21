@@ -49,6 +49,7 @@ import top.itning.smpandroid.R2;
 import top.itning.smpandroid.client.ClassClient;
 import top.itning.smpandroid.client.http.HttpHelper;
 import top.itning.smpandroid.client.http.Page;
+import top.itning.smpandroid.client.http.RestModel;
 import top.itning.smpandroid.entity.StudentClassCheck;
 import top.itning.smpandroid.entity.StudentClassUser;
 import top.itning.smpandroid.ui.adapter.StudentClassCheckRecyclerViewAdapter;
@@ -517,11 +518,19 @@ public class ClassCheckActivity extends AppCompatActivity implements Toolbar.OnM
                                 .quitClass(studentClassUserFromIntent.getStudentClass().getId())
                                 .subscribeOn(Schedulers.computation())
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(noContent -> {
+                                .subscribe(objectResponse -> {
                                     App.needRefreshStudentClassUserData = true;
                                     progressDialog.dismiss();
-                                    Toast.makeText(this, "退出成功", Toast.LENGTH_LONG).show();
-                                    onBackPressed();
+                                    if (objectResponse.errorBody() != null) {
+                                        RestModel<String> restModel = HttpHelper.getRestModelFromErrorBody(objectResponse.errorBody());
+                                        if (restModel != null) {
+                                            Log.w(TAG, "错误：" + restModel.toString());
+                                            Toast.makeText(this, "错误：" + restModel.getMsg(), Toast.LENGTH_LONG).show();
+                                        }
+                                    } else {
+                                        Toast.makeText(this, "退出成功", Toast.LENGTH_LONG).show();
+                                        onBackPressed();
+                                    }
                                 }, HttpHelper.ErrorInvoke.get(this)
                                         .before(t -> progressDialog.dismiss())
                                         .orElseCode(t -> {

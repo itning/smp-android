@@ -39,6 +39,7 @@ import top.itning.smpandroid.R2;
 import top.itning.smpandroid.client.RoomClient;
 import top.itning.smpandroid.client.SecurityClient;
 import top.itning.smpandroid.client.http.HttpHelper;
+import top.itning.smpandroid.client.http.RestModel;
 
 import static top.itning.smpandroid.ui.activity.RoomActivity.START_FACE_ACTIVITY_REQUEST_CODE;
 
@@ -176,11 +177,19 @@ public class PersonalActivity extends AppCompatActivity {
                 .changePassword(pwd)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(pageRestModel -> {
+                .subscribe(objectResponse -> {
                     bottomSheetDialog.dismiss();
                     progressDialog.dismiss();
-                    Toast.makeText(this, "修改成功，请重新登录", Toast.LENGTH_LONG).show();
-                    handleLogoutBtnClick(null);
+                    if (objectResponse.errorBody() != null) {
+                        RestModel<String> restModel = HttpHelper.getRestModelFromErrorBody(objectResponse.errorBody());
+                        if (restModel != null) {
+                            Log.w(TAG, "错误：" + restModel.toString());
+                            Toast.makeText(this, "错误：" + restModel.getMsg(), Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        Toast.makeText(this, "修改成功，请重新登录", Toast.LENGTH_LONG).show();
+                        handleLogoutBtnClick(null);
+                    }
                 }, HttpHelper.ErrorInvoke.get(this)
                         .before(t -> progressDialog.dismiss())
                         .orElseException(t -> {

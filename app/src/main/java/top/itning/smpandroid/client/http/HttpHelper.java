@@ -23,6 +23,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import retrofit2.HttpException;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -112,14 +113,28 @@ public final class HttpHelper {
     @SuppressWarnings("ConstantConditions")
     public static RestModel<String> getRestModelFromHttpException(@NonNull HttpException httpException) {
         try {
-            Type type = TypeBuilder
-                    .newInstance(RestModel.class)
-                    .addTypeParam(String.class)
-                    .build();
-            return new Gson().fromJson(httpException.response().errorBody().string(), type);
+            return getRestModelFromErrorBody(httpException.response().errorBody());
         } catch (Exception e) {
             Log.w("HttpHelper", "parse error response exception", e);
             return null;
+        }
+    }
+
+    @Nullable
+    public static RestModel<String> getRestModelFromErrorBody(@Nullable ResponseBody errorBody) {
+        if (errorBody == null) {
+            return null;
+        } else {
+            try {
+                Type type = TypeBuilder
+                        .newInstance(RestModel.class)
+                        .addTypeParam(String.class)
+                        .build();
+                return new Gson().fromJson(errorBody.string(), type);
+            } catch (Exception e) {
+                Log.w("HttpHelper", "parse error response exception", e);
+                return null;
+            }
         }
     }
 
