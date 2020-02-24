@@ -47,7 +47,7 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation "androidx.recyclerview:recyclerview:1.1.0"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha03"
-    implementation 'com.google.android.material:material:1.2.0-alpha02'
+    implementation 'com.google.android.material:material:1.2.0-alpha05'
     implementation 'com.github.itning:shadow:0.0.3'
     implementation 'com.amap.api:location:4.7.2'
     implementation 'com.squareup.retrofit2:retrofit:2.6.2'
