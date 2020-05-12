@@ -1,118 +1,58 @@
-# 依赖
+# 基于Spring Cloud的学生管理平台（Android教师端）
 
-## 编译器
+[![GitHub stars](https://img.shields.io/github/stars/itning/smp-android.svg?style=social&label=Stars)](https://github.com/itning/smp-android/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/itning/smp-android.svg?style=social&label=Fork)](https://github.com/itning/smp-android/network/members)
+[![GitHub watchers](https://img.shields.io/github/watchers/itning/smp-android.svg?style=social&label=Watch)](https://github.com/itning/smp-android/watchers)
+[![GitHub followers](https://img.shields.io/github/followers/itning.svg?style=social&label=Follow)](https://github.com/itning?tab=followers)
 
-| 编译器                 | 版本     |
-| ---------------------- | -------- |
-| android studio         | 3.5.3    |
-| intellij idea ultimate | 2019.3.1 |
-| webstorm               | 2019.3.1 |
+[![GitHub issues](https://img.shields.io/github/issues/itning/smp-android.svg)](https://github.com/itning/smp-android/issues)
+[![GitHub license](https://img.shields.io/github/license/itning/smp-android.svg)](https://github.com/itning/smp-android/blob/master/LICENSE)
+[![GitHub last commit](https://img.shields.io/github/last-commit/itning/smp-android.svg)](https://github.com/itning/smp-android/commits)
+[![GitHub release](https://img.shields.io/github/release/itning/smp-android.svg)](https://github.com/itning/smp-android/releases)
+[![GitHub repo size in bytes](https://img.shields.io/github/repo-size/itning/smp-android.svg)](https://github.com/itning/smp-android)
+[![HitCount](http://hits.dwyl.io/itning/smp-android.svg)](http://hits.dwyl.io/itning/smp-android)
+[![language](https://img.shields.io/badge/language-JAVA-green.svg)](https://github.com/itning/smp-android)
 
-## 编译与运行
+## 工程
 
-| 依赖                    | 版本          |
-| ----------------------- | ------------- |
-| Java SE Development Kit | 8u231 (JDK 8) |
-| maven                   | 3.6.3         |
-| node.js                 | 12.14.0       |
-| yarn                    | 1.21.1        |
-| npm                     | 6.13.4        |
-| mysql                   | 8.0.18        |
+1. 前端项目
+   - [Vue.JS 实现](https://github.com/itning/smp-client)
+   - [Angular 实现](https://github.com/itning/smp-client-angular)
+2. Android移动端项目
+   - [教师端](https://github.com/itning/smp-android-teacher)
+   - [学生端](https://github.com/itning/smp-android)
+3. 后端
+   - [Spring Cloud](https://github.com/itning/smp-server)
+4. 人脸识别模型库
+   - [smp-ext-lib](https://gitee.com/itning/smp-ext-lib)
+5. 统一配置中心数据存放仓库
+   - [smp-server-config](https://gitee.com/itning/smp-server-config)
 
-# 设置代理
+## 依赖
 
-## maven
+### 编译器
 
-[IDEA配置maven(配置阿里云中央仓库)](https://www.cnblogs.com/sword-successful/p/6408281.html)
+| 编译器            | 版本      |
+| ----------------- | --------- |
+| android studio    | 3.5.3+    |
+| intellij idea     | 2019.3.1+ |
+| intellij webstorm | 2019.3.1+ |
 
-```xml
-<mirror>  
-	<id>nexus-aliyun</id>  
-	<mirrorOf>central</mirrorOf>    
-	<name>Nexus aliyun</name>  
-	<url>http://maven.aliyun.com/nexus/content/groups/public</url>  
-</mirror> 
-```
+### 编译与运行
 
-## npm
+| 依赖                    | 版本                |
+| ----------------------- | ------------------- |
+| Java SE Development Kit | 8u231 (JDK 8<JDK11) |
+| maven                   | 3.6.3+              |
+| node.js                 | 12.14.0+            |
+| yarn                    | 1.21.1+             |
+| npm                     | 6.13.4+             |
+| mysql                   | 8.0.18+             |
 
-```shell
-npm config set registry https://registry.npm.taobao.org
-```
+## 项目编译
 
-## yarn
-
-```shell
-yarn config set registry https://registry.npm.taobao.org
-```
-
-# 项目配置
-
-## seetaface.properties
-
-该配置用于人脸识别与JNI DLL加载
-
-**seetaface model目录应包含以下文件:**
-
-SeetaFaceDetector2.0.ats
-
-SeetaFaceRecognizer2.0.ats
-
-SeetaPointDetector2.0.pts5.ats
-
-## smp-config->application.properties
-
-```properties
-spring.cloud.config.server.git.uri=https://gitee.com/itning/smp-server-config
-spring.cloud.config.server.git.username=${env.GITEE_USERNAME}
-spring.cloud.config.server.git.password=${env.GITEE_PASSWORD}
-spring.cloud.config.server.git.basedir=G:\\ProjectData\\IdeaProjects\\smp-server\\config-dir
-```
-
-项目中的配置可以看[https://gitee.com/itning/smp-server-config](https://gitee.com/itning/smp-server-config)中的配置文件
-
-# 项目打包
-
-windows直接运行项目根目录``package.bat``脚本
-
-# 项目编译
-
-## 前端
-
-配置目录：``src/api/index.js``
-
-[高德地图开发者地址](https://lbs.amap.com/)
-
-```js
-SERVER_HOST=>后端地址
-API.key=>用于高德地图KEY
-```
-
-构建步骤
-
-```bash
-yarn
-yarn build
-```
-
-直接运行
-
-```bash
-yarn serve
-```
-
-## 后端
-
-```bash
-package.bat
-```
-
-## Android移动端
-
-```
-minSdkVersion 28
-手机必须是android p(9 sdk28)以上
-```
+**minSdkVersion 28**
+**手机必须是android p (9 sdk28) 以上**
 
 ```bash
 # 查看构建版本
@@ -131,4 +71,32 @@ minSdkVersion 28
 ./gradlew build --info --debug --stacktrace
 # 强制更新最新依赖，清除构建并构建
 ./gradlew clean build --refresh-dependencies
-```                                                                                                                                                                                                                                                                          
+```
+
+## 预览
+
+![a](https://raw.githubusercontent.com/itning/smp-android/master/pic/a.jpg)
+
+![b](https://raw.githubusercontent.com/itning/smp-android/master/pic/b.jpg)
+
+![c](https://raw.githubusercontent.com/itning/smp-android/master/pic/c.jpg)
+
+![d](https://raw.githubusercontent.com/itning/smp-android/master/pic/d.jpg)
+
+![e](https://raw.githubusercontent.com/itning/smp-android/master/pic/e.jpg)
+
+![f](https://raw.githubusercontent.com/itning/smp-android/master/pic/f.jpg)
+
+![g](https://raw.githubusercontent.com/itning/smp-android/master/pic/g.jpg)
+
+![h](https://raw.githubusercontent.com/itning/smp-android/master/pic/h.jpg)
+
+![i](https://raw.githubusercontent.com/itning/smp-android/master/pic/i.jpg)
+
+![j](https://raw.githubusercontent.com/itning/smp-android/master/pic/j.jpg)
+
+## 版权声明
+
+该项目仅用于学习，禁止用于商业用途。
+
+项目是我个人毕业项目，**不建议作为您毕业项目来使用**。
