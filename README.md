@@ -1,4 +1,4 @@
-# 基于Spring Cloud的学生管理平台（Android教师端）
+# 基于Spring Cloud的学生管理平台（Android学生端）
 
 [![GitHub stars](https://img.shields.io/github/stars/itning/smp-android.svg?style=social&label=Stars)](https://github.com/itning/smp-android/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/itning/smp-android.svg?style=social&label=Fork)](https://github.com/itning/smp-android/network/members)
