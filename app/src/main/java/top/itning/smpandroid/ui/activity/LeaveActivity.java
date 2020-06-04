@@ -365,7 +365,7 @@ public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecy
      * @param leave           评论所在请假信息
      */
     @SuppressWarnings("deprecation")
-    private void handleNewReasonBtn(@Nullable RecyclerView.Adapter adapter, TextInputLayout textInputLayout, EditText editText, Leave leave) {
+    private void handleNewReasonBtn(@Nullable RecyclerView.Adapter<?> adapter, TextInputLayout textInputLayout, EditText editText, Leave leave) {
         if (editText.getText().length() == 0 || "".contentEquals(editText.getText())) {
             textInputLayout.setError("请输入评论");
             return;
