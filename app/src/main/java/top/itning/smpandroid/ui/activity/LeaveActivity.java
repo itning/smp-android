@@ -36,7 +36,9 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -545,7 +547,11 @@ public class LeaveActivity extends AppCompatActivity implements StudentLeaveRecy
                     textInputLayout.clearFocus();
                     editText.clearFocus();
                     editText.setText("");
-                    leaveList.add(0, restModel.getData());
+                    Leave newLeave = restModel.getData();
+                    if (Objects.isNull(newLeave.getLeaveReasonList())) {
+                        newLeave.setLeaveReasonList(Collections.emptyList());
+                    }
+                    leaveList.add(0, newLeave);
                     if (newLeaveDialog != null) {
                         newLeaveDialog.dismiss();
                     }
