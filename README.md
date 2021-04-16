@@ -10,7 +10,7 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/itning/smp-android.svg)](https://github.com/itning/smp-android/commits)
 [![GitHub release](https://img.shields.io/github/release/itning/smp-android.svg)](https://github.com/itning/smp-android/releases)
 [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/itning/smp-android.svg)](https://github.com/itning/smp-android)
-[![HitCount](http://hits.dwyl.io/itning/smp-android.svg)](http://hits.dwyl.io/itning/smp-android)
+[![HitCount](http://hits.dwyl.com/itning/smp-android.svg)](http://hits.dwyl.com/itning/smp-android)
 [![language](https://img.shields.io/badge/language-JAVA-green.svg)](https://github.com/itning/smp-android)
 
 ## 工程
